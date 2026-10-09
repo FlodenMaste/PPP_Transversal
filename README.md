@@ -98,13 +98,18 @@ cd ../mcp-noc-ai && python3 -m venv venv && ./venv/bin/pip install -r requiremen
 ### 4. Démonstration MCP Inspector (A.5)
 
 ```bash
-# "Command" de l'Inspecteur, un onglet par serveur :
-python -m mcp_server.server                 # port 6274
-python -m server.main                       # port 6374  (serveur 1)
-python server.py                            # port 6474  (serveur 2/3)
+# Option simple (4 serveurs, un onglet Inspector par serveur) :
+scripts/inspector.sh                 # ou : scripts/inspector.sh --dry-run
+
+# "Command" de l'Inspecteur, un onglet/terminal par serveur,
+# chacun depuis la racine du dépôt (ports alignés sur scripts/inspector.sh) :
+cd mcp-noc-telecom/server && CONSENT_MODE=dry_run ./venv/bin/python -m server.main   # 6274
+cd noc-mcp-server && ./venv/bin/python server.py                                     # 6374
+cd mcp-noc-ai && ./venv/bin/python server.py                                         # 6474
+cd PPP_MCP_Telecom_Supervision && ./venv/bin/python -m mcp_server.server             # 6574
 ```
 
-Les trois interfaces répondent ensuite sur `http://127.0.0.1:{6274,6374,6474}`.
+Les quatre interfaces répondent ensuite sur `http://127.0.0.1:{6274,6374,6474,6574}`.
 
 ### Docker (socle)
 
@@ -116,12 +121,21 @@ docker compose run --rm tests   # 34 tests dans l'image
 
 ## Tests
 
+Commandes lancées **depuis la racine du dépôt**, avec les `venv` créés en
+section 3. Le niveau A.6 exige en plus les dépendances de test et Keycloak :
+
+```bash
+cd mcp-noc-telecom/server && ./venv/bin/pip install -r requirements-dev.txt   # pytest, pytest-asyncio
+docker compose -f mcp-noc-telecom/docker-compose.yml up -d                     # Keycloak, port 18080
+```
+
 | Niveau | Commande | Résultat |
 |---|---|---|
-| 1 — unitaires | `cd PPP_MCP_Telecom_Supervision && ./venv/bin/python -m pytest collector/tests -q` | 34 passed |
-| 5 — sécurité A.6 | `cd mcp-noc-telecom/server && ./venv/bin/pytest test_a6_security.py -q` | 28 passed |
-| 3 — bout en bout | `CONSENT_MODE=dry_run ./venv/bin/python test_mcp.py` (serveur 1) | RBAC, consentement, audit |
-| 3 — outils vus par l'hôte | `./venv/bin/python test_client_roots.py` (serveur 2) | 9 outils, 4 resources, 1 prompt |
+| 1 — unitaires (socle) | `cd PPP_MCP_Telecom_Supervision && ./venv/bin/python -m pytest collector/tests -q` | 34 passed |
+| 5 — sécurité A.6 | `cd mcp-noc-telecom/server && ./venv/bin/python -m pytest test_a6_security.py -q` | 28 passed |
+| 3 — bout en bout | `cd mcp-noc-telecom/server && CONSENT_MODE=dry_run ./venv/bin/python test_mcp.py` | RBAC, consentement, audit |
+| 3 — outils vus par l'hôte | `cd noc-mcp-server && ./venv/bin/python test_client_roots.py` | 9 outils, 4 resources, 1 prompt |
+| 5 — socle dans le conteneur | `cd PPP_MCP_Telecom_Supervision && docker compose run --rm tests` | 34 passed |
 
 Niveaux 2 et 4 (intégration réelle, coupure de lien) : voir le rapport,
 partie III — méthodologie de tests.
@@ -133,7 +147,7 @@ partie III — méthodologie de tests.
 | A.1 / A.2 | Fondements MCP, primitives (tools, resources, prompts, elicitation, roots, logging) | ✅ |
 | A.3 | stdio + Streamable HTTP, spec 2025-11-25, HTTP+SSE déprécié | ✅ |
 | A.4 | FastMCP 3.x, `@mcp.tool()`, Python 3.12 | ✅ (`fastmcp>=3.0,<4.0` sur les 4 dépôts) |
-| A.5 | Démonstration via MCP Inspector | ✅ (3 instances) |
+| A.5 | Démonstration via MCP Inspector | ✅ (4 instances, `scripts/inspector.sh`) |
 | A.6 | RBAC Keycloak, OAuth 2.1 + PKCE, anti-passthrough, consentement, audit | ✅ (28 tests) |
 | A.7 | Dépôt public, Dockerfile, docker-compose, schémas JSON, Inspector, rapport PDF | ✅ (hors support PPT) |
 | B.2 | Laboratoire Containerlab (5 nœuds, panne injectable) | ✅ |
