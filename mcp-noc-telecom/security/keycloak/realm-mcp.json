@@ -24,6 +24,10 @@
       {
         "name": "administrateur",
         "description": "Administration du socle MCP"
+      },
+      {
+        "name": "invite",
+        "description": "Hors hiérarchie RBAC : sert à démontrer un refus d'accès"
       }
     ]
   },
@@ -63,6 +67,18 @@
         {"type": "password", "value": "Administrateur2026!", "temporary": false}
       ],
       "realmRoles": ["administrateur"]
+    },
+    {
+      "username": "invite",
+      "enabled": true,
+      "firstName": "In",
+      "lastName": "Vite",
+      "email": "invite@mcp-noc.lab",
+      "emailVerified": true,
+      "credentials": [
+        {"type": "password", "value": "Invite2026!", "temporary": false}
+      ],
+      "realmRoles": ["invite"]
     }
   ],
   "clients": [
