@@ -1,7 +1,7 @@
 # Socle MCP NOC - exigence A.7 (Dockerfile + docker-compose.yml)
 #
 #   docker compose up -d            -> serveur MCP (Streamable HTTP, port 8000)
-#   docker compose run --rm tests   -> suite de tests unitaires (34 tests)
+#   docker compose run --rm tests   -> suite de tests unitaires (37 tests)
 #   docker compose build            -> reconstruction de l'image
 #
 # Mode simulé par défaut : aucun accès réseau réel nécessaire, ni pour le

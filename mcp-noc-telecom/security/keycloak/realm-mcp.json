@@ -84,14 +84,14 @@
   "clients": [
     {
       "clientId": "mcp-cli",
-      "name": "Clients CLI / tests automatises",
-      "description": "Client public : grant mot de passe (ROPC) pour les tests, + authorization code PKCE",
+      "name": "Client interactif (navigation / MCP Inspector)",
+      "description": "Client public : authorization code + PKCE S256 uniquement. Le grant mot de passe (ROPC) est desactive : il n'est pas utilisable sans agent utilisateur.",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": true,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "frontchannelLogout": true,
       "redirectUris": [
         "http://localhost/*",
@@ -104,6 +104,20 @@
       "attributes": {
         "pkce.code.challenge.method": "S256"
       }
+    },
+    {
+      "clientId": "mcp-cli-ropc",
+      "name": "Client automatisation / tests (ROPC)",
+      "description": "Client dedie au grant mot de passe (ROPC), isole du client interactif : utilise uniquement par demo_securite.py / test_mcp.py en mode stdio. Desactiver ce client (enabled=false) hors laboratoire.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "frontchannelLogout": false,
+      "redirectUris": [],
+      "webOrigins": []
     }
   ]
 }

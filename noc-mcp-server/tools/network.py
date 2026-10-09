@@ -1,8 +1,21 @@
+"""
+Tests de connectivité du serveur 2 (cahier B.5).
+
+Les cibles sont bornees a l'inventaire du laboratoire (B.6 : le serveur
+ne sert pas de relais vers n'importe quelle adresse).
+"""
+
 import subprocess
+
+from tools.targets import target_error
 
 
 def ping_host(ip: str) -> dict:
     """Teste si une adresse IP est joignable."""
+
+    refused = target_error(ip)
+    if refused:
+        return refused
 
     try:
         result = subprocess.run(
@@ -30,6 +43,10 @@ def ping_host(ip: str) -> dict:
 def traceroute_host(ip: str) -> dict:
     """Effectue un traceroute vers une adresse IP."""
 
+    refused = target_error(ip)
+    if refused:
+        return refused
+
     try:
         result = subprocess.run(
             ["traceroute", "-m", "12", ip],
@@ -50,4 +67,3 @@ def traceroute_host(ip: str) -> dict:
             "host": ip,
             "error": str(exc),
         }
-

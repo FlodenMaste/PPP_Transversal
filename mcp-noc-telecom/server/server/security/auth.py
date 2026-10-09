@@ -108,14 +108,16 @@ async def verify_keycloak_token(token: str) -> dict:
 async def fetch_keycloak_token(
     username: str,
     password: str,
-    client_id: str = "mcp-cli",
+    client_id: str = "mcp-cli-ropc",
     scope: str = "openid profile email roles",
 ) -> str:
     """
     Recupere un jeton d'acces Keycloak (grant mot de passe, ROPC).
 
     Utilise par les tests et les demonstrations en mode stdio, ou aucun
-    parcours navigateur n'est disponible. En demonstration interactive,
+    parcours navigateur n'est disponible. Ce grant est isole sur le client
+    dedie « mcp-cli-ropc » : le client interactif « mcp-cli » (authorization
+    code + PKCE) le laisse desactive. En demonstration interactive,
     le parcours recommande reste authorization code + PKCE dans
     MCP Inspector (A.6).
     """

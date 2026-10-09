@@ -1,13 +1,25 @@
+import logging
 import os
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+logger = logging.getLogger("mcp-noc-config")
+
 # --- Authentification locale (mode "local", hors Keycloak) ---------------
+# Secret de signature HS256 utilise uniquement en mode AUTH_MODE=local.
+# Il doit etre renseigne via le .env (jamais versionne) : la valeur par
+# defaut est signalee comme faible au demarrage.
 JWT_SECRET = os.getenv("JWT_SECRET", "change-moi-avant-la-demo")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_MINUTES = int(os.getenv("JWT_EXPIRATION_MINUTES", "60"))
+
+if JWT_SECRET == "change-moi-avant-la-demo":
+    logger.warning(
+        "JWT_SECRET utilise la valeur par defaut : renseigner JWT_SECRET "
+        "dans le .env du serveur (mode local uniquement, hors Keycloak)."
+    )
 
 # --- Hierarchie RBAC (A.6 : RBAC adossse aux jetons JWT) -----------------
 ROLE_HIERARCHY = ["operateur", "superviseur", "administrateur"]
@@ -48,6 +60,15 @@ CONSENT_MODE = os.getenv("CONSENT_MODE", "elicitation").strip().lower()
 
 
 # --- Secrets du laboratoire (B.6 : surchargeables par variables .env) ----
+# Valeurs du laboratoire (comme les comptes Keycloak du realm) : renseigner
+# un .env distinct pour tout autre usage ; un avertissement est emis si les
+# valeurs par defaut sont utilisees telles quelles.
 SNMP_USER = os.getenv("SNMP_USER", "mcpreadonly")
 SNMP_AUTH_PASS = os.getenv("SNMP_AUTH_PASS", "AuthPass2026!")
 SNMP_PRIV_PASS = os.getenv("SNMP_PRIV_PASS", "PrivPass2026!")
+
+if SNMP_AUTH_PASS == "AuthPass2026!" or SNMP_PRIV_PASS == "PrivPass2026!":
+    logger.warning(
+        "Secrets SNMPv3 par defaut du laboratoire utilises : surcharger "
+        "SNMP_AUTH_PASS / SNMP_PRIV_PASS via le .env (B.6)."
+    )

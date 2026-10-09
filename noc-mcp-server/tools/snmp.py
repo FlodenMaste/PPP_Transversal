@@ -1,3 +1,12 @@
+"""
+Collecteur SNMP du serveur 2 - SNMPv3 authPriv exclusif (cahier B.5 / B.6).
+
+Conformément au cahier des charges, les comptes SNMP sont en lecture seule
+et les secrets ne sont JAMAIS un argument d'outil (ils vivent dans le .env,
+jamais versionné) : aucune rétrocompatibilité SNMPv2c « community=public ».
+Les cibles sont bornées à l'inventaire du laboratoire (tools/targets.py).
+"""
+
 import asyncio
 import os
 
@@ -10,25 +19,25 @@ from pysnmp.hlapi.v3arch.asyncio import (
     get_cmd,
 )
 
+from tools.targets import target_error
 
-def _security(
-    username: str = "",
-    auth_key: str = "",
-    priv_key: str = "",
-    community: str = "public",
-):
-    """Retourne le mode de securite SNMP.
 
-    SNMPv3 authPriv si un utilisateur est fourni (argument ou .env),
-    sinon SNMPv2c avec la community fournie.
-    """
-    username = username or os.environ.get("SNMPV3_USER", "")
+class SnmpConfigError(Exception):
+    """Compte SNMPv3 manquant dans l'environnement (jamais de repli)."""
 
-    if not username:
-        from pysnmp.hlapi.v3arch.asyncio import CommunityData
 
-        return CommunityData(community or os.environ.get("SNMP_COMMUNITY", "public"), mpModel=1)
+def _require_env(name: str) -> str:
+    value = os.environ.get(name, "").strip()
+    if not value:
+        raise SnmpConfigError(
+            f"Variable d'environnement obligatoire absente : {name} "
+            "(compte SNMPv3 en lecture seule, cf. .env - aucun repli community)"
+        )
+    return value
 
+
+def _security():
+    """Compte SNMPv3 authPriv lu dans le .env (aucun secret en argument)."""
     from pysnmp.hlapi.v3arch.asyncio import (
         UsmUserData,
         usmAesCfb128Protocol,
@@ -37,18 +46,24 @@ def _security(
         usmHMACSHAAuthProtocol,
     )
 
-    auth_key = auth_key or os.environ.get("SNMPV3_AUTH_KEY", "")
-    priv_key = priv_key or os.environ.get("SNMPV3_PRIV_KEY", "")
+    username = _require_env("SNMPV3_USER")
+    auth_key = _require_env("SNMPV3_AUTH_KEY")
+    priv_key = _require_env("SNMPV3_PRIV_KEY")
+
+    if len(auth_key) < 8 or len(priv_key) < 8:
+        raise SnmpConfigError(
+            "Les cles SNMPv3 doivent mesurer au moins 8 caracteres (USM)"
+        )
 
     auth_protocol = {
         "SHA": usmHMACSHAAuthProtocol,
         "SHA256": usmHMAC192SHA256AuthProtocol,
-    }.get(os.environ.get("SNMPV3_AUTH_PROTOCOL", "SHA"), usmHMACSHAAuthProtocol)
+    }.get(os.environ.get("SNMPV3_AUTH_PROTOCOL", "SHA").upper(), usmHMACSHAAuthProtocol)
 
     priv_protocol = {
         "AES": usmAesCfb128Protocol,
         "AES256": usmAesCfb256Protocol,
-    }.get(os.environ.get("SNMPV3_PRIV_PROTOCOL", "AES"), usmAesCfb128Protocol)
+    }.get(os.environ.get("SNMPV3_PRIV_PROTOCOL", "AES").upper(), usmAesCfb128Protocol)
 
     return UsmUserData(
         username,
@@ -95,21 +110,17 @@ async def _snmp_get(ip, oid, security, port):
     }
 
 
-def snmp_get(
-    ip: str,
-    oid: str,
-    community: str = "public",
-    username: str = "",
-    auth_key: str = "",
-    priv_key: str = "",
-    port: int = 161,
-) -> dict:
+def snmp_get(ip: str, oid: str, port: int = 161) -> dict:
+    """GET SNMPv3 (authPriv, lecture seule). Les secrets viennent du .env."""
+    refused = target_error(ip)
+    if refused:
+        return refused
 
     try:
-        return asyncio.run(
-            _snmp_get(ip, oid, _security(username, auth_key, priv_key, community), port)
-        )
+        return asyncio.run(_snmp_get(ip, oid, _security(), port))
 
+    except SnmpConfigError as exc:
+        return {"status": "error", "host": ip, "error": str(exc)}
     except Exception as exc:
         return {
             "status": "error",
@@ -184,21 +195,17 @@ async def _snmp_walk(ip, oid, security, port):
     }
 
 
-def snmp_walk(
-    ip: str,
-    oid: str,
-    community: str = "public",
-    username: str = "",
-    auth_key: str = "",
-    priv_key: str = "",
-    port: int = 161,
-) -> dict:
+def snmp_walk(ip: str, oid: str, port: int = 161) -> dict:
+    """WALK SNMPv3 (authPriv, lecture seule). Les secrets viennent du .env."""
+    refused = target_error(ip)
+    if refused:
+        return refused
 
     try:
-        return asyncio.run(
-            _snmp_walk(ip, oid, _security(username, auth_key, priv_key, community), port)
-        )
+        return asyncio.run(_snmp_walk(ip, oid, _security(), port))
 
+    except SnmpConfigError as exc:
+        return {"status": "error", "host": ip, "error": str(exc)}
     except Exception as exc:
         return {
             "status": "error",
@@ -206,21 +213,6 @@ def snmp_walk(
         }
 
 
-def get_interface_stats(
-    ip: str,
-    community: str = "public",
-    username: str = "",
-    auth_key: str = "",
-    priv_key: str = "",
-    port: int = 161,
-) -> dict:
-
-    return snmp_walk(
-        ip,
-        "1.3.6.1.2.1.2.2.1",
-        community,
-        username,
-        auth_key,
-        priv_key,
-        port,
-    )
+def get_interface_stats(ip: str, port: int = 161) -> dict:
+    """Statistiques d'interfaces (branche ifTable) en SNMPv3."""
+    return snmp_walk(ip, "1.3.6.1.2.1.2.2.1", port)

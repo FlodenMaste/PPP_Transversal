@@ -31,7 +31,8 @@ zéro, `docker compose down -v && docker compose up -d --force-recreate`.
 | Durée de vie du jeton | 300 s |
 | Rôles (hiérarchie RBAC) | `operateur` < `superviseur` < `administrateur` |
 | Rôle hors hiérarchie | `invite` (sert à démontrer un **refus** RBAC) |
-| Client OAuth public | `mcp-cli` (PKCE S256, grant mot de passe pour les tests) |
+| Client OAuth public | `mcp-cli` (authorization code + PKCE S256, ROPC désactivé) |
+| Client automatisation/tests | `mcp-cli-ropc` (grant mot de passe réservé aux scripts stdio, désactivable hors labo) |
 
 ### Utilisateurs
 
