@@ -1,0 +1,7 @@
+[
+  {"timestamp": "2026-10-07T22:06:13", "device": "r1", "severity": "critical", "message": "linkDown sur eth1 (10.0.12.1) - lien primaire r1<->r2"},
+  {"timestamp": "2026-10-07T22:06:13", "device": "r2", "severity": "critical", "message": "linkDown sur eth1 (10.0.12.2) - lien primaire r1<->r2"},
+  {"timestamp": "2026-10-07T22:06:20", "device": "r1", "severity": "major", "message": "OSPF: perte du voisin 2.2.2.2, bascule sur le lien de secours 10.0.13.0/30"},
+  {"timestamp": "2026-10-07T22:09:21", "device": "r1", "severity": "critical", "message": "BGP peer 2.2.2.2 state changed to Idle (hold timer expired)"},
+  {"timestamp": "2026-10-07T22:12:06", "device": "r1", "severity": "info", "message": "linkUp sur eth1 - recuperation du lien primaire"}
+]

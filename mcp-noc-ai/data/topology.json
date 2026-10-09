@@ -1,0 +1,10 @@
+{
+  "nodes": ["r1", "r2", "r3", "client", "server"],
+  "links": [
+    {"source": "r1", "target": "r2", "type": "ethernet", "network": "10.0.12.0/30", "role": "lien primaire"},
+    {"source": "r1", "target": "r3", "type": "ethernet", "network": "10.0.13.0/30", "role": "lien de secours"},
+    {"source": "r2", "target": "r3", "type": "ethernet", "network": "10.0.23.0/30", "role": "transit"},
+    {"source": "r1", "target": "client", "type": "ethernet", "network": "192.168.1.0/24", "role": "LAN client"},
+    {"source": "r3", "target": "server", "type": "ethernet", "network": "192.168.3.0/24", "role": "LAN serveur"}
+  ]
+}

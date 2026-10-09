@@ -1,0 +1,79 @@
+{
+    "nodes": [
+        {
+            "id": "r1",
+            "type": "router",
+            "mgmt_ip": "172.20.20.11",
+            "loopback": "1.1.1.1"
+        },
+        {
+            "id": "r2",
+            "type": "router",
+            "mgmt_ip": "172.20.20.12",
+            "loopback": "2.2.2.2"
+        },
+        {
+            "id": "r3",
+            "type": "router",
+            "mgmt_ip": "172.20.20.13",
+            "loopback": "3.3.3.3"
+        },
+        {
+            "id": "client",
+            "type": "host",
+            "mgmt_ip": "172.20.20.14"
+        },
+        {
+            "id": "server",
+            "type": "host",
+            "mgmt_ip": "172.20.20.15"
+        }
+    ],
+    "links": [
+        {
+            "source": "r1",
+            "source_interface": "eth1",
+            "target": "r2",
+            "target_interface": "eth1",
+            "network": "10.0.12.0/30",
+            "role": "lien primaire"
+        },
+        {
+            "source": "r1",
+            "source_interface": "eth2",
+            "target": "r3",
+            "target_interface": "eth2",
+            "network": "10.0.13.0/30",
+            "role": "lien de secours"
+        },
+        {
+            "source": "r2",
+            "source_interface": "eth2",
+            "target": "r3",
+            "target_interface": "eth1",
+            "network": "10.0.23.0/30",
+            "role": "lien transit"
+        },
+        {
+            "source": "r1",
+            "source_interface": "eth3",
+            "target": "client",
+            "target_interface": "eth1",
+            "network": "192.168.1.0/24",
+            "role": "LAN client"
+        },
+        {
+            "source": "r3",
+            "source_interface": "eth3",
+            "target": "server",
+            "target_interface": "eth1",
+            "network": "192.168.3.0/24",
+            "role": "LAN serveur"
+        }
+    ],
+    "routing": {
+        "igp": "OSPF area 0",
+        "egp": "iBGP AS65000",
+        "failover": "perte de 10.0.12.0/30 -> bascule sur 10.0.13.0/30"
+    }
+}

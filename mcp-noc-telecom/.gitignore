@@ -1,0 +1,12 @@
+# Dossier généré automatiquement par Containerlab à chaque déploiement
+clab-mcp-noc-lab/
+*.log
+
+# Secrets locaux (Keycloak, serveurs)
+.env
+security/keycloak/*.env
+
+# Dossiers generes
+venv/
+__pycache__/
+*.pyc

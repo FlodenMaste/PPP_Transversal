@@ -1,0 +1,13 @@
+[
+  {"timestamp": "2026-10-07T22:06:12", "device": "r1", "message": "%LINK-3-UPDOWN: Interface eth1, changed state to down"},
+  {"timestamp": "2026-10-07T22:06:12", "device": "r2", "message": "%LINK-3-UPDOWN: Interface eth1, changed state to down"},
+  {"timestamp": "2026-10-07T22:06:14", "device": "r1", "message": "%OSPF-5-ADJCHG: Neighbor 2.2.2.2 on eth1 from Full to Down, Dead timer expired"},
+  {"timestamp": "2026-10-07T22:06:15", "device": "r2", "message": "%OSPF-5-ADJCHG: Neighbor 1.1.1.1 on eth1 from Full to Down, Dead timer expired"},
+  {"timestamp": "2026-10-07T22:06:16", "device": "r1", "message": "%OSPF-5-RCV: route 192.168.3.0/24 installee via 10.0.13.2 (bascule sur le lien de secours r3)"},
+  {"timestamp": "2026-10-07T22:09:20", "device": "r1", "message": "%BGP-5-ADJCHANGE: neighbor 2.2.2.2 Down Hold timer expired"},
+  {"timestamp": "2026-10-07T22:09:22", "device": "r2", "message": "%BGP-5-ADJCHANGE: neighbor 1.1.1.1 Down Hold timer expired"},
+  {"timestamp": "2026-10-07T22:12:05", "device": "r1", "message": "%LINK-3-UPDOWN: Interface eth1, changed state to up"},
+  {"timestamp": "2026-10-07T22:12:10", "device": "r1", "message": "%OSPF-5-ADJCHG: Neighbor 2.2.2.2 on eth1 from Down to Full"},
+  {"timestamp": "2026-10-07T22:12:20", "device": "r1", "message": "%BGP-5-ADJCHANGE: neighbor 2.2.2.2 Up"},
+  {"timestamp": "2026-10-07T22:12:22", "device": "r2", "message": "%BGP-5-ADJCHANGE: neighbor 1.1.1.1 Up"}
+]

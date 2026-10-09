@@ -1,0 +1,9 @@
+{
+  "devices": [
+    {"name": "r1", "role": "router", "vendor": "FRRouting", "mgmt_ip": "172.20.20.11", "loopback": "1.1.1.1", "location": "mcp-noc-lab"},
+    {"name": "r2", "role": "router", "vendor": "FRRouting", "mgmt_ip": "172.20.20.12", "loopback": "2.2.2.2", "location": "mcp-noc-lab"},
+    {"name": "r3", "role": "router", "vendor": "FRRouting", "mgmt_ip": "172.20.20.13", "loopback": "3.3.3.3", "location": "mcp-noc-lab"},
+    {"name": "client", "role": "host", "vendor": "Alpine", "mgmt_ip": "172.20.20.14", "location": "mcp-noc-lab"},
+    {"name": "server", "role": "host", "vendor": "Alpine", "mgmt_ip": "172.20.20.15", "location": "mcp-noc-lab"}
+  ]
+}

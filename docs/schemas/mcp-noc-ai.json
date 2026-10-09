@@ -1,0 +1,214 @@
+{
+  "server": "mcp-noc-ai",
+  "framework": "fastmcp",
+  "generated_at": "2026-10-08T23:15:50.607665+00:00",
+  "tool_count": 9,
+  "tools": [
+    {
+      "name": "analyze_root_cause",
+      "description": "Rassemble les preuves techniques pour un incident (topologie locale,\ninventaire, evenements bruts). Ne formule aucune hypothese elle-meme.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "incident_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "incident_id"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "correlate_alarms",
+      "description": "Regroupe les Syslogs et les alarmes SNMP survenus dans une fenetre de temps\ndonnee en incidents candidats, en se basant sur la proximite topologique.\nSans reference_time, la fenetre est centree sur le dernier evenement des donnees.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "time_window_minutes": {
+            "default": 15,
+            "type": "integer"
+          },
+          "reference_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "detect_anomalies",
+      "description": "Interprete des anomalies     pre-calculees (erreurs d'interface, sessions\nBGP down, alarmes critiques) sans effectuer de calcul statistique\nelle-meme : le calcul est fait en amont, cet outil qualifie et\npriorise les alertes existantes.\nSans reference_time, la fenetre est centree sur la derniere alarme disponible.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "time_window_minutes": {
+            "default": 15,
+            "type": "integer"
+          },
+          "reference_time": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "generate_incident_report",
+      "description": "Cherche le runbook pertinent et assemble un rapport structure, en\nattente de validation humaine.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "incident_id": {
+            "type": "string"
+          },
+          "root_cause_summary": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "incident_id",
+          "root_cause_summary"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_bgp_peers",
+      "description": "Retourne l'etat des sessions BGP (voisins, AS distant, etat,\nuptime) d'un equipement donne. Lecture seule.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_interface_stats",
+      "description": "Retourne les statistiques des interfaces d'un equipement (etat,\ncompteurs, erreurs). Lecture seule, aucune modification possible.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_ospf_neighbors",
+      "description": "Retourne le voisinage OSPF (neighbor ID, etat, interface) d'un\nequipement donne. Lecture seule.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "ping_host",
+      "description": "Simule un test de connectivite (ping) depuis un equipement vers\nune cible. Se base sur l'etat des interfaces pour determiner le\nresultat. Lecture seule, aucune configuration modifiee.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device",
+          "target"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "qos_stats",
+      "description": "Retourne les statistiques de qualite de service (taux de perte,\nlatence, gigue) des interfaces d'un equipement. Lecture seule.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    }
+  ]
+}

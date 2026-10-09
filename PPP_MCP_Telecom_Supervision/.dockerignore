@@ -1,0 +1,11 @@
+# Contexte de build minimal : ni venv, ni depot git, ni artefacts du labo.
+venv/
+.git/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pcap
+.env
+clab-*/
+lab/containerlab/clab-*/
+*.log

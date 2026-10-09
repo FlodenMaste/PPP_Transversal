@@ -1,0 +1,93 @@
+{
+  "realm": "mcp-noc",
+  "enabled": true,
+  "displayName": "MCP NOC Telecom",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": false,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 3600,
+  "roles": {
+    "realm": [
+      {
+        "name": "operateur",
+        "description": "Consultation SNMP/Syslog (lecture seule)"
+      },
+      {
+        "name": "superviseur",
+        "description": "Supervision etendue"
+      },
+      {
+        "name": "administrateur",
+        "description": "Administration du socle MCP"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "operateur",
+      "enabled": true,
+      "firstName": "Ope",
+      "lastName": "Rateur",
+      "email": "operateur@mcp-noc.lab",
+      "emailVerified": true,
+      "credentials": [
+        {"type": "password", "value": "Operateur2026!", "temporary": false}
+      ],
+      "realmRoles": ["operateur"]
+    },
+    {
+      "username": "superviseur",
+      "enabled": true,
+      "firstName": "Super",
+      "lastName": "Viseur",
+      "email": "superviseur@mcp-noc.lab",
+      "emailVerified": true,
+      "credentials": [
+        {"type": "password", "value": "Superviseur2026!", "temporary": false}
+      ],
+      "realmRoles": ["superviseur"]
+    },
+    {
+      "username": "administrateur",
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "Istrateur",
+      "email": "administrateur@mcp-noc.lab",
+      "emailVerified": true,
+      "credentials": [
+        {"type": "password", "value": "Administrateur2026!", "temporary": false}
+      ],
+      "realmRoles": ["administrateur"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "mcp-cli",
+      "name": "Clients CLI / tests automatises",
+      "description": "Client public : grant mot de passe (ROPC) pour les tests, + authorization code PKCE",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "frontchannelLogout": true,
+      "redirectUris": [
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "webOrigins": [
+        "http://localhost",
+        "http://127.0.0.1"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ]
+}

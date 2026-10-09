@@ -1,0 +1,53 @@
+{
+    "devices": [
+        {
+            "name": "r1",
+            "type": "router",
+            "ip": "172.20.20.11",
+            "vendor": "FRRouting",
+            "location": "NOC-LAB",
+            "role": "edge - loopback 1.1.1.1 - LAN client 192.168.1.1"
+        },
+        {
+            "name": "r2",
+            "type": "router",
+            "ip": "172.20.20.12",
+            "vendor": "FRRouting",
+            "location": "NOC-LAB",
+            "role": "transit - loopback 2.2.2.2"
+        },
+        {
+            "name": "r3",
+            "type": "router",
+            "ip": "172.20.20.13",
+            "vendor": "FRRouting",
+            "location": "NOC-LAB",
+            "role": "edge - loopback 3.3.3.3 - LAN serveur 192.168.3.1"
+        },
+        {
+            "name": "client",
+            "type": "host",
+            "ip": "172.20.20.14",
+            "vendor": "Alpine",
+            "location": "NOC-LAB",
+            "role": "poste client 192.168.1.10"
+        },
+        {
+            "name": "server",
+            "type": "host",
+            "ip": "172.20.20.15",
+            "vendor": "Alpine",
+            "location": "NOC-LAB",
+            "role": "serveur 192.168.3.10"
+        }
+    ],
+    "snmp": {
+        "version": "v3",
+        "security": "authPriv",
+        "community_fallback": false
+    },
+    "ssh": {
+        "user": "noc",
+        "access": "frrvty - vtysh lecture seule"
+    }
+}

@@ -1,0 +1,40 @@
+# Socle MCP NOC - exigence A.7 (Dockerfile + docker-compose.yml)
+#
+#   docker compose up -d            -> serveur MCP (Streamable HTTP, port 8000)
+#   docker compose run --rm tests   -> suite de tests unitaires (34 tests)
+#   docker compose build            -> reconstruction de l'image
+#
+# Mode simulé par défaut : aucun accès réseau réel nécessaire, ni pour le
+# build (hors pip), ni pour les tests.
+#
+# Mode réel (laboratoire Containerlab deploye) : les collecteurs ciblent le
+# reseau de management 172.20.20.0/24. Ajouter alors :
+#     network_mode: host
+#     environment: { COLLECTOR_MODE: real }
+#   ainsi que les secrets du labo (SNMPv3 / SSH) transmis par variable
+#   d'environnement - jamais versionnes (.env est ignore par git).
+#
+# Keycloak / OAuth 2.1 + PKCE (A.6) : mcp-noc-telecom/docker-compose.yml
+
+services:
+  socle:
+    build: .
+    image: mcp-noc-socle:latest
+    container_name: mcp-noc-socle
+    environment:
+      COLLECTOR_MODE: simulated
+      MCP_TRANSPORT: http
+      MCP_HTTP_HOST: 0.0.0.0
+      MCP_HTTP_PORT: "8000"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  tests:
+    build: .
+    image: mcp-noc-socle:latest
+    container_name: mcp-noc-socle-tests
+    profiles: ["tests"]
+    environment:
+      COLLECTOR_MODE: simulated
+    command: ["python", "-m", "pytest", "collector/tests", "-q"]

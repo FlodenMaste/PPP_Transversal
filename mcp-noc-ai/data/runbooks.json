@@ -1,0 +1,28 @@
+{
+  "runbooks": [
+    {
+      "id": "RB-BGP-FLAP",
+      "title": "Instabilite de session BGP (flapping)",
+      "tags": ["bgp", "flap", "session bgp", "voisin bgp"],
+      "steps": [
+        "1. Verifier l'etat de la session avec get_bgp_peers.",
+        "2. Verifier la stabilite du lien physique sous-jacent (get_interface_stats).",
+        "3. Verifier les timers BGP (hold-time / keepalive).",
+        "4. Si la cause est un lien instable, escalader vers l'equipe transmission.",
+        "5. Documenter l'incident avant toute action corrective."
+      ]
+    },
+    {
+      "id": "RB-LINK-DOWN",
+      "title": "Coupure de lien",
+      "tags": ["link down", "interface down", "coupure", "lien"],
+      "steps": [
+        "1. Confirmer la coupure via get_interface_stats sur les deux extremites.",
+        "2. Verifier s'il existe un chemin de secours dans la topologie.",
+        "3. Notifier l'equipe terrain si la coupure est physique.",
+        "4. Suivre la procedure de bascule si un lien de secours existe.",
+        "5. Documenter l'incident avant toute action corrective."
+      ]
+    }
+  ]
+}

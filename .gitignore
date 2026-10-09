@@ -1,0 +1,17 @@
+# Environnements virtuels, secrets et artefacts locaux
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+*.log
+# ... sauf les fixtures de test versionnees
+!**/fixtures/*.log
+*.pcap
+*.save
+.vscode/
+
+# Artefacts du laboratoire Containerlab (regeneres a chaque deploiement)
+clab-*/
+lab/containerlab/clab-*/

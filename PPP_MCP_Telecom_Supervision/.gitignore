@@ -1,0 +1,8 @@
+.env
+__pycache__/
+.pytest_cache/
+venv/
+*.pcap
+
+# Dossier genere par Containerlab a chaque deploiement
+clab-*/

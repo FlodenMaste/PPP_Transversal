@@ -1,0 +1,361 @@
+{
+  "server": "mcp-noc-socle",
+  "framework": "fastmcp",
+  "generated_at": "2026-10-08T23:15:43.624113+00:00",
+  "tool_count": 13,
+  "tools": [
+    {
+      "name": "analyze_netflow",
+      "description": "Historique des flux (top talkers, volumes) via nfdump, en lecture seule.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          },
+          "window": {
+            "default": "last_5_minutes",
+            "type": "string"
+          },
+          "top_n": {
+            "default": 10,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "device_ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "capture_pcap",
+      "description": "Capture passive bornee en duree et en volume (plafonds de config B.6).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          },
+          "interface": {
+            "default": "eth0",
+            "type": "string"
+          },
+          "duration_seconds": {
+            "default": 10,
+            "type": "integer"
+          },
+          "max_packets": {
+            "default": 200,
+            "type": "integer"
+          },
+          "capture_filter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "device_ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "detect_anomalies",
+      "description": "Detecte des anomalies de trafic par regles deterministes (sans LLM).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          },
+          "window": {
+            "default": "last_5_minutes",
+            "type": "string"
+          }
+        },
+        "required": [
+          "device_ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_bgp_peers",
+      "description": "Etat des voisins BGP (CLI show, liste blanche lecture seule).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device_ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_interface_stats",
+      "description": "Statistiques d'interfaces (debit, erreurs, etat) lues par SNMP.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          },
+          "interface": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "device_ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_ospf_neighbors",
+      "description": "Etat du voisinage OSPF (CLI show, liste blanche lecture seule).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device_ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_recent_syslog",
+      "description": "Syslogs recents, filtrables par equipement, pour la correlation.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "netconf_get",
+      "description": "Extrait une portion de configuration YANG en lecture seule (get-config).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          },
+          "yang_filter": {
+            "default": "interfaces",
+            "type": "string"
+          },
+          "filter_xml": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "device_ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "ping_host",
+      "description": "Teste l'accessibilite ICMP d'un hote (count plafonne a PING_MAX_COUNT).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "count": {
+            "default": 4,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "host"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "qos_stats",
+      "description": "Statistiques QoS (paquets transmis, rejets par classe).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          },
+          "interface": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "device_ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "snmp_get",
+      "description": "GET SNMPv3 (authPriv) sur un OID numerique, ex: 1.3.6.1.2.1.1.1.0.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          },
+          "oid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device_ip",
+          "oid"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "snmp_walk",
+      "description": "WALK SNMPv3 (authPriv) sous un OID, borne a SNMP_WALK_MAX_ENTRIES.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "device_ip": {
+            "type": "string"
+          },
+          "oid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "device_ip",
+          "oid"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "traceroute",
+      "description": "Trace le chemin IP vers un hote (nombre de sauts plafonne).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "host": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "host"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    }
+  ]
+}

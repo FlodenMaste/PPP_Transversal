@@ -1,0 +1,69 @@
+{
+  "_note": "Instantane de l'incident du 2026-10-07 22:06-22:12 (coupure du lien primaire r1<->r2 injecte dans le labo Containerlab mcp-noc-lab). Le labo est revenu a l'etat nominal depuis.",
+  "interfaces": {
+    "r1": [
+      {"name": "eth0", "peer": "mgmt", "status": "up", "in_octets": 48291745, "out_octets": 47182360, "in_errors": 0, "out_errors": 0},
+      {"name": "eth1", "peer": "r2", "status": "down", "in_octets": 938475610, "out_octets": 902837465, "in_errors": 0, "out_errors": 0, "last_change": "2026-10-07T22:06:12"},
+      {"name": "eth2", "peer": "r3", "status": "up", "in_octets": 3184726510, "out_octets": 3298374610, "in_errors": 0, "out_errors": 0},
+      {"name": "eth3", "peer": "client", "status": "up", "in_octets": 1928374650, "out_octets": 1823746500, "in_errors": 0, "out_errors": 0}
+    ],
+    "r2": [
+      {"name": "eth0", "peer": "mgmt", "status": "up", "in_octets": 41827364, "out_octets": 40918273, "in_errors": 0, "out_errors": 0},
+      {"name": "eth1", "peer": "r1", "status": "down", "in_octets": 902837465, "out_octets": 938475610, "in_errors": 0, "out_errors": 0, "last_change": "2026-10-07T22:06:12"},
+      {"name": "eth2", "peer": "r3", "status": "up", "in_octets": 2384756102, "out_octets": 2298374610, "in_errors": 0, "out_errors": 0}
+    ],
+    "r3": [
+      {"name": "eth0", "peer": "mgmt", "status": "up", "in_octets": 43718265, "out_octets": 42617354, "in_errors": 0, "out_errors": 0},
+      {"name": "eth1", "peer": "r2", "status": "up", "in_octets": 2298374610, "out_octets": 2384756102, "in_errors": 0, "out_errors": 0},
+      {"name": "eth2", "peer": "r1", "status": "up", "in_octets": 3298374610, "out_octets": 3184726510, "in_errors": 0, "out_errors": 0},
+      {"name": "eth3", "peer": "server", "status": "up", "in_octets": 847362510, "out_octets": 823746501, "in_errors": 0, "out_errors": 0}
+    ],
+    "client": [
+      {"name": "eth1", "peer": "r1", "status": "up", "in_octets": 182374650, "out_octets": 192837465, "in_errors": 0, "out_errors": 0}
+    ],
+    "server": [
+      {"name": "eth1", "peer": "r3", "status": "up", "in_octets": 823746501, "out_octets": 847362510, "in_errors": 0, "out_errors": 0}
+    ]
+  },
+  "bgp_peers": {
+    "r1": [
+      {"neighbor_ip": "2.2.2.2", "neighbor_device": "r2", "remote_as": 65000, "state": "Idle", "uptime": "00:00:00", "pfxRcd": 0, "last_event": "2026-10-07T22:09:20"},
+      {"neighbor_ip": "3.3.3.3", "neighbor_device": "r3", "remote_as": 65000, "state": "Established", "uptime": "45:12:03", "pfxRcd": 5}
+    ],
+    "r2": [
+      {"neighbor_ip": "1.1.1.1", "neighbor_device": "r1", "remote_as": 65000, "state": "Idle", "uptime": "00:00:00", "pfxRcd": 0, "last_event": "2026-10-07T22:09:22"},
+      {"neighbor_ip": "3.3.3.3", "neighbor_device": "r3", "remote_as": 65000, "state": "Established", "uptime": "45:12:03", "pfxRcd": 5}
+    ],
+    "r3": [
+      {"neighbor_ip": "1.1.1.1", "neighbor_device": "r1", "remote_as": 65000, "state": "Established", "uptime": "45:12:03", "pfxRcd": 5},
+      {"neighbor_ip": "2.2.2.2", "neighbor_device": "r2", "remote_as": 65000, "state": "Established", "uptime": "45:12:03", "pfxRcd": 5}
+    ]
+  },
+  "ospf_neighbors": {
+    "r1": [
+      {"neighbor_id": "3.3.3.3", "neighbor_device": "r3", "state": "Full", "interface": "eth2", "address": "10.0.13.2"}
+    ],
+    "r2": [
+      {"neighbor_id": "3.3.3.3", "neighbor_device": "r3", "state": "Full", "interface": "eth2", "address": "10.0.23.2"}
+    ],
+    "r3": [
+      {"neighbor_id": "1.1.1.1", "neighbor_device": "r1", "state": "Full", "interface": "eth2", "address": "10.0.13.1"},
+      {"neighbor_id": "2.2.2.2", "neighbor_device": "r2", "state": "Full", "interface": "eth1", "address": "10.0.23.1"}
+    ]
+  },
+  "qos_stats": {
+    "r1": [
+      {"interface": "eth1", "drop_rate_pct": 100.0, "avg_latency_ms": null, "jitter_ms": null, "note": "lien coupe"},
+      {"interface": "eth2", "drop_rate_pct": 0.01, "avg_latency_ms": 1.2, "jitter_ms": 0.3},
+      {"interface": "eth3", "drop_rate_pct": 0.0, "avg_latency_ms": 0.4, "jitter_ms": 0.1}
+    ],
+    "r2": [
+      {"interface": "eth1", "drop_rate_pct": 100.0, "avg_latency_ms": null, "jitter_ms": null, "note": "lien coupe"},
+      {"interface": "eth2", "drop_rate_pct": 0.02, "avg_latency_ms": 1.8, "jitter_ms": 0.4}
+    ],
+    "r3": [
+      {"interface": "eth1", "drop_rate_pct": 0.03, "avg_latency_ms": 2.1, "jitter_ms": 0.5},
+      {"interface": "eth2", "drop_rate_pct": 0.02, "avg_latency_ms": 1.9, "jitter_ms": 0.4}
+    ]
+  }
+}

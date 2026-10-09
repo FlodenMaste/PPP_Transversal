@@ -1,0 +1,48 @@
+{
+    "networks": [
+        {
+            "network": "172.20.20.0/24",
+            "gateway": "172.20.20.1",
+            "description": "Management Containerlab (SNMP + SSH)"
+        },
+        {
+            "network": "10.0.12.0/30",
+            "gateway": "10.0.12.1",
+            "description": "Lien r1 <-> r2 (primaire)"
+        },
+        {
+            "network": "10.0.13.0/30",
+            "gateway": "10.0.13.1",
+            "description": "Lien r1 <-> r3 (secours)"
+        },
+        {
+            "network": "10.0.23.0/30",
+            "gateway": "10.0.23.2",
+            "description": "Lien r2 <-> r3 (transit)"
+        },
+        {
+            "network": "192.168.1.0/24",
+            "gateway": "192.168.1.1",
+            "description": "LAN client"
+        },
+        {
+            "network": "192.168.3.0/24",
+            "gateway": "192.168.3.1",
+            "description": "LAN serveur"
+        }
+    ],
+    "addresses": [
+        { "ip": "172.20.20.11", "device": "r1" },
+        { "ip": "172.20.20.12", "device": "r2" },
+        { "ip": "172.20.20.13", "device": "r3" },
+        { "ip": "172.20.20.14", "device": "client" },
+        { "ip": "172.20.20.15", "device": "server" },
+        { "ip": "1.1.1.1", "device": "r1" },
+        { "ip": "2.2.2.2", "device": "r2" },
+        { "ip": "3.3.3.3", "device": "r3" },
+        { "ip": "192.168.1.1", "device": "r1" },
+        { "ip": "192.168.1.10", "device": "client" },
+        { "ip": "192.168.3.1", "device": "r3" },
+        { "ip": "192.168.3.10", "device": "server" }
+    ]
+}

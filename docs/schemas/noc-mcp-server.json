@@ -1,0 +1,272 @@
+{
+  "server": "noc-mcp-server",
+  "framework": "fastmcp",
+  "generated_at": "2026-10-08T23:15:48.501249+00:00",
+  "tool_count": 9,
+  "tools": [
+    {
+      "name": "get_bgp_peers",
+      "description": "Récupère les voisins BGP depuis FRRouting (SSH, lecture seule).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ip": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_device_status",
+      "description": "Retourne les informations d'un équipement de l'inventaire.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_interface_stats",
+      "description": "Récupère les statistiques SNMP sur les interfaces.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ip": {
+            "type": "string"
+          },
+          "community": {
+            "default": "public",
+            "type": "string"
+          },
+          "username": {
+            "default": "",
+            "type": "string"
+          },
+          "auth_key": {
+            "default": "",
+            "type": "string"
+          },
+          "priv_key": {
+            "default": "",
+            "type": "string"
+          },
+          "port": {
+            "default": 161,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_ospf_neighbors",
+      "description": "Récupère les voisins OSPF depuis FRRouting (SSH, lecture seule).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ip": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "netconf_get",
+      "description": "Effectue une opération NETCONF GET.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "host": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "port": {
+            "default": 830,
+            "type": "integer"
+          },
+          "filter_xml": {
+            "default": "<filter type='subtree'></filter>",
+            "type": "string"
+          }
+        },
+        "required": [
+          "host",
+          "username",
+          "password"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "ping_host",
+      "description": "Teste la connectivité IP vers un équipement.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ip": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "snmp_get",
+      "description": "Effectue une requête SNMP GET (SNMPv3 authPriv si username renseigné,\nsinon SNMPv2c). Sans argument, les identifiants SNMPv3 sont lus dans le .env.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ip": {
+            "type": "string"
+          },
+          "oid": {
+            "type": "string"
+          },
+          "community": {
+            "default": "public",
+            "type": "string"
+          },
+          "username": {
+            "default": "",
+            "type": "string"
+          },
+          "auth_key": {
+            "default": "",
+            "type": "string"
+          },
+          "priv_key": {
+            "default": "",
+            "type": "string"
+          },
+          "port": {
+            "default": 161,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ip",
+          "oid"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "snmp_walk",
+      "description": "Parcourt une branche SNMP (SNMPv3 authPriv si username renseigné,\nsinon SNMPv2c). Sans argument, les identifiants SNMPv3 sont lus dans le .env.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ip": {
+            "type": "string"
+          },
+          "oid": {
+            "type": "string"
+          },
+          "community": {
+            "default": "public",
+            "type": "string"
+          },
+          "username": {
+            "default": "",
+            "type": "string"
+          },
+          "auth_key": {
+            "default": "",
+            "type": "string"
+          },
+          "priv_key": {
+            "default": "",
+            "type": "string"
+          },
+          "port": {
+            "default": 161,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ip",
+          "oid"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "traceroute_host",
+      "description": "Affiche le chemin réseau vers une adresse IP.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ip": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ip"
+        ],
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    }
+  ]
+}
