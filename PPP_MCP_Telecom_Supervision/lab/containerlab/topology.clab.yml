@@ -26,7 +26,7 @@ topology:
   nodes:
     r1:
       kind: linux
-      image: frrouting/frr:latest
+      image: mcp-noc-frr:local
       mgmt-ipv4: 172.20.20.11
       binds:
         - configs/r1/daemons:/etc/frr/daemons
@@ -34,17 +34,19 @@ topology:
         - configs/r1/snmpd.conf:/etc/snmp/snmpd.conf
       exec:
         - sysctl -w net.ipv4.ip_forward=1
-        - apk add --no-cache net-snmp net-snmp-tools openssh
         - sh -c 'adduser -D -G frrvty noc || true'
         - sh -c 'echo "noc:LabPass2026!" | chpasswd'
+        - sh -c 'touch /etc/frr/vtysh.conf || true'
         - ssh-keygen -A
         - sh -c 'sed -i "s/^#*PermitRootLogin.*/PermitRootLogin no/; s/^#*PasswordAuthentication.*/PasswordAuthentication yes/" /etc/ssh/sshd_config'
         - /usr/sbin/sshd
         - snmpd
+        - sh -c 'syslogd -L -R 172.20.20.1:1514 || syslogd -L -R 172.20.20.1'
+        - sh -c 'softflowd -i eth1 -n 172.20.20.1:9995 -v 9 -p /var/run/softflowd.pid'
 
     r2:
       kind: linux
-      image: frrouting/frr:latest
+      image: mcp-noc-frr:local
       mgmt-ipv4: 172.20.20.12
       binds:
         - configs/r2/daemons:/etc/frr/daemons
@@ -52,17 +54,19 @@ topology:
         - configs/r2/snmpd.conf:/etc/snmp/snmpd.conf
       exec:
         - sysctl -w net.ipv4.ip_forward=1
-        - apk add --no-cache net-snmp net-snmp-tools openssh
         - sh -c 'adduser -D -G frrvty noc || true'
         - sh -c 'echo "noc:LabPass2026!" | chpasswd'
+        - sh -c 'touch /etc/frr/vtysh.conf || true'
         - ssh-keygen -A
         - sh -c 'sed -i "s/^#*PermitRootLogin.*/PermitRootLogin no/; s/^#*PasswordAuthentication.*/PasswordAuthentication yes/" /etc/ssh/sshd_config'
         - /usr/sbin/sshd
         - snmpd
+        - sh -c 'syslogd -L -R 172.20.20.1:1514 || syslogd -L -R 172.20.20.1'
+        - sh -c 'softflowd -i eth1 -n 172.20.20.1:9995 -v 9 -p /var/run/softflowd.pid'
 
     r3:
       kind: linux
-      image: frrouting/frr:latest
+      image: mcp-noc-frr:local
       mgmt-ipv4: 172.20.20.13
       binds:
         - configs/r3/daemons:/etc/frr/daemons
@@ -70,31 +74,33 @@ topology:
         - configs/r3/snmpd.conf:/etc/snmp/snmpd.conf
       exec:
         - sysctl -w net.ipv4.ip_forward=1
-        - apk add --no-cache net-snmp net-snmp-tools openssh
         - sh -c 'adduser -D -G frrvty noc || true'
         - sh -c 'echo "noc:LabPass2026!" | chpasswd'
+        - sh -c 'touch /etc/frr/vtysh.conf || true'
         - ssh-keygen -A
         - sh -c 'sed -i "s/^#*PermitRootLogin.*/PermitRootLogin no/; s/^#*PasswordAuthentication.*/PasswordAuthentication yes/" /etc/ssh/sshd_config'
         - /usr/sbin/sshd
         - snmpd
+        - sh -c 'syslogd -L -R 172.20.20.1:1514 || syslogd -L -R 172.20.20.1'
+        - sh -c 'softflowd -i eth1 -n 172.20.20.1:9995 -v 9 -p /var/run/softflowd.pid'
 
     client:
       kind: linux
-      image: alpine:latest
+      image: mcp-noc-term:local
       mgmt-ipv4: 172.20.20.14
       exec:
-        - apk add --no-cache net-snmp-tools
         - sh -c 'ip addr add 192.168.1.10/24 dev eth1'
+        - sh -c 'softflowd -i eth1 -n 172.20.20.1:9995 -v 9 -p /var/run/softflowd.pid'
         - sh -c 'ip route replace default via 192.168.1.1'
       cmd: sleep infinity
 
     server:
       kind: linux
-      image: alpine:latest
+      image: mcp-noc-term:local
       mgmt-ipv4: 172.20.20.15
       exec:
-        - apk add --no-cache net-snmp-tools
         - sh -c 'ip addr add 192.168.3.10/24 dev eth1'
+        - sh -c 'softflowd -i eth1 -n 172.20.20.1:9995 -v 9 -p /var/run/softflowd.pid'
         - sh -c 'ip route replace default via 192.168.3.1'
       cmd: sleep infinity
 

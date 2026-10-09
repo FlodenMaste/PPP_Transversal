@@ -2,15 +2,20 @@
 """
 Validation des collecteurs CONTRE LE LABO REEL (mode COLLECTOR_MODE=real).
 
-A lancer depuis la racine du depot, le labo Containerlab devant etre deploye :
+A lancer depuis la racine du depot, le labo Containerlab etant deploye et les
+services d'acquisition de l'hote demarres (relais syslog udp/1514 + nfcapd
+udp/9995) :
 
-    cd lab/containerlab && sudo clab deploy -t topology.clab.yml && cd ../..
+    docker build -t mcp-noc-frr:local lab/containerlab
+    docker build -t mcp-noc-term:local -f lab/containerlab/Dockerfile.term lab/containerlab
+    cd lab/containerlab && sudo containerlab deploy -t topology.clab.yml && cd ../..
+    sudo scripts/lab_services.sh            # relais syslog + nfcapd
     ./venv/bin/python lab/validate_collectors.py
 
 Chaque collecteur est appele une fois en mode "real" ; le script affiche le
 statut, la source et un extrait de donnees. Les collecteurs qui dependent de
-binaires systeme absents (nfdump, tshark) ou d'un service non expose par le
-labo FRR (NETCONF) sont signales comme NON DISPONIBLE - c'est attendu, pas une
+binaires systeme absents (tshark) ou d'un service non expose par le labo
+FRR (NETCONF) sont signales comme NON DISPONIBLE - c'est attendu, pas une
 regression.
 
 Cibles (IPs de management statiques, cf. lab/containerlab/topology.clab.yml) :
@@ -66,8 +71,10 @@ def main() -> int:
 
     from collector.cli.cli_collector import get_bgp_peers, get_ospf_neighbors
     from collector.netconf.netconf_collector import netconf_get
+    from collector.netflow.netflow_collector import analyze_netflow
     from collector.ping.ping_collector import ping_host, traceroute
     from collector.snmp.snmp_collector import get_interface_stats, snmp_get, snmp_walk
+    from collector.syslog.syslog_collector import get_recent_syslog
 
     results: list[tuple[str, bool]] = []
 
@@ -86,6 +93,13 @@ def main() -> int:
     results.append(("get_bgp_peers r1", run("get_bgp_peers r1", get_bgp_peers, R1)))
     results.append(("get_ospf_neighbors r1", run("get_ospf_neighbors r1", get_ospf_neighbors, R1)))
 
+    print("\n--- Syslog (relais udp/1514 -> /var/log/network_syslog.log) ---")
+    results.append(("get_recent_syslog", run("get_recent_syslog", get_recent_syslog, limit=5)))
+    results.append(("get_recent_syslog r1", run("get_recent_syslog r1", get_recent_syslog, "r1", 5)))
+
+    print("\n--- NetFlow (softflowd -> nfcapd udp/9995 -> /var/netflow) ---")
+    results.append(("analyze_netflow r1", run("analyze_netflow r1", analyze_netflow, R1, top_n=5)))
+
     print("\n--- Services non exposes par le labo FRR (attendu en erreur) ---")
     results.append(("netconf_get r1 (non dispo)", run("netconf_get r1", netconf_get, R1)))
 
@@ -99,7 +113,7 @@ def main() -> int:
     print(f"  Resultat : {ok}/{len(results)} collecteurs repondent en mode reel")
     print("  (netconf_get est attendu en erreur : le labo FRR n'expose pas NETCONF)")
     print("=" * 78)
-    return 0 if ok >= 7 else 1
+    return 0 if ok >= len(results) - 2 else 1
 
 
 if __name__ == "__main__":

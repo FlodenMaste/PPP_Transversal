@@ -1,0 +1,11 @@
+# Image des terminaux du laboratoire NOC (client / serveur).
+#
+# Alpine + les outils de test utilises par les scripts de demonstration :
+#   - net-snmp-tools : snmpwalk depuis le conteneur « client » (serveur 1) ;
+#   - softflowd      : exporteur NetFlow vers nfcapd de l'hote (udp/9995).
+#
+# Construction :
+#   docker build -t mcp-noc-term:local -f Dockerfile.term lab/containerlab
+FROM alpine:latest
+
+RUN apk add --no-cache net-snmp-tools softflowd

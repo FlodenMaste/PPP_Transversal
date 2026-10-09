@@ -24,8 +24,10 @@ def _real_analyze_netflow(device_ip: str, window: str, top_n: int) -> dict[str, 
     """Exécute nfdump en subprocess et parse la sortie.
 
     `window` est un filtre temporel nfdump (ex: "-t 2026/09/14.10:00:00-2026/09/14.10:05:00").
-    On utilise ici -a (agrégation) et -n top_n pour les top talkers,
-    format de sortie CSV (-o csv) pour un parsing simple.
+    On utilise ici -s record/bytes (tri par volume) et -n top_n pour les
+    top talkers, au format CSV (-o csv). Les colonnes sont résolues par
+    leur en-tête (sa/da/pr/ipkt/ibyt/opkt/obyt) : les index fixes ne
+    sont pas stables entre versions de nfdump.
     """
     cmd = [
         config.NFDUMP_BIN,
@@ -36,20 +38,39 @@ def _real_analyze_netflow(device_ip: str, window: str, top_n: int) -> dict[str, 
     ]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=30, check=True)
 
-    top_talkers = []
-    lines = [line for line in result.stdout.splitlines() if line and not line.startswith("ts,")]
-    for line in lines[:top_n]:
+    top_talkers: list[dict[str, Any]] = []
+    header: list[str] | None = None
+    for line in result.stdout.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith("ts,"):
+            header = line.split(",")
+            continue
+        if header is None:
+            continue
         fields = line.split(",")
-        if len(fields) >= 8:
-            top_talkers.append(
-                {
-                    "src_ip": fields[3],
-                    "dst_ip": fields[5],
-                    "protocol": fields[7],
-                    "bytes": int(fields[-2]) if fields[-2].isdigit() else 0,
-                    "packets": int(fields[-3]) if fields[-3].isdigit() else 0,
-                }
-            )
+        if len(fields) != len(header):
+            continue  # lignes de synthèse nfdump ("Summary", bilan, ...)
+        row = dict(zip(header, fields))
+        try:
+            packets = int(row.get("ipkt", "0") or 0) + int(row.get("opkt", "0") or 0)
+            nbytes = int(row.get("ibyt", "0") or 0) + int(row.get("obyt", "0") or 0)
+        except ValueError:
+            continue
+        top_talkers.append(
+            {
+                "src_ip": row.get("sa", ""),
+                "dst_ip": row.get("da", ""),
+                "protocol": row.get("pr", ""),
+                "src_port": int(row["sp"]) if row.get("sp", "").isdigit() else None,
+                "dst_port": int(row["dp"]) if row.get("dp", "").isdigit() else None,
+                "bytes": nbytes,
+                "packets": packets,
+            }
+        )
+        if len(top_talkers) >= top_n:
+            break
 
     return {"window": window, "top_talkers": top_talkers, "raw_stdout": result.stdout}
 

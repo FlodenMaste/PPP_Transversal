@@ -14,7 +14,7 @@ Pré-requis pour le mode réel :
     root selon l'OS).
 """
 
-import os
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -30,10 +30,31 @@ def _clamp(value: int, maximum: int) -> int:
     return min(value, maximum)
 
 
+_SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]*$")
+
+
+def _capture_output_file(device_ip: str, interface: str) -> str:
+    """Construit le chemin du fichier de capture en eliminant toute
+    injection de sequence (« ../ ») qui permettrait d'ecrire hors du
+    repertoire PCAP_OUTPUT_DIR (B.6)."""
+    for label, value in (("device_ip", device_ip), ("interface", interface)):
+        if not value or not _SAFE_NAME.match(value):
+            raise ValueError(
+                f"Nom de capture invalide ({label}={value!r}) : "
+                "seuls [A-Za-z0-9_.:-] sont admis, sans '..'"
+            )
+
+    base = Path(config.PCAP_OUTPUT_DIR).resolve()
+    base.mkdir(parents=True, exist_ok=True)
+    target = (base / f"{device_ip}_{interface}.pcap").resolve()
+    if target.parent != base:
+        raise ValueError(f"Chemin de capture hors de {base}")
+    return str(target)
+
+
 def _real_capture_pcap(device_ip: str, interface: str, duration_seconds: int, max_packets: int, capture_filter: str | None) -> dict[str, Any]:
     """Lance une capture tshark bridée en durée et en nombre de paquets."""
-    Path(config.PCAP_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
-    output_file = os.path.join(config.PCAP_OUTPUT_DIR, f"{device_ip}_{interface}.pcap")
+    output_file = _capture_output_file(device_ip, interface)
 
     cmd = [
         "tshark",
