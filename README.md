@@ -25,11 +25,13 @@ PPP_Transversal/
 │     └── server/                  RBAC, JWT Keycloak (OIDC), OAuth 2.1 + PKCE,
 │                                  consentement par élicitation, audit
 ├── noc-mcp-server/                Serveur 2 : 9 outils réseau temps réel (SNMPv3, SSH)
-├── mcp-noc-ai/                    Serveur 3 : analyse IA (corrélation, RCA, rapports)
+├── mcp-noc-ai/                    Serveur 3 : analyse IA (10 outils, corrélation, RCA)
 ├── docs/
-│     ├── Rapport_...pdf           Rapport technique (79 pages)
+│     ├── Rapport_...pdf           Rapport technique (59 pages)
+│     ├── Dimensionnement_TCO.md   Hypothèses, formules, mesures, TCO (B.10)
 │     └── schemas/                 Schémas JSON des outils des 4 serveurs (A.7)
-└── scripts/                       Export des schémas JSON (régénérable)
+└── scripts/                       Export des schémas JSON (régénérable),
+                                   relais syslog, services labo, mesures (B.10)
 ```
 
 ## Livrables (A.7 / B.8)
@@ -39,7 +41,7 @@ PPP_Transversal/
 | Dépôt GitHub public | ce dépôt |
 | `Dockerfile` | `PPP_MCP_Telecom_Supervision/Dockerfile` |
 | `docker-compose.yml` | `PPP_MCP_Telecom_Supervision/docker-compose.yml` (+ Keycloak : `mcp-noc-telecom/docker-compose.yml`) |
-| Schémas JSON des outils | `docs/schemas/*.json` (34 outils, régénérables via `scripts/run_all.sh`) |
+| Schémas JSON des outils | `docs/schemas/*.json` (35 outils, régénérables via `scripts/run_all.sh`) |
 | Environnement de démonstration MCP Inspector | voir « Démarrage rapide » ci-dessous |
 | Rapport PDF | `docs/Rapport_PPP_MCP_Telecom_Supervision.pdf` |
 | Support de présentation (PowerPoint) | support de soutenance, hors dépôt |
@@ -62,9 +64,23 @@ containerlab version   # 0.79.0
 
 ```bash
 cd PPP_MCP_Telecom_Supervision
+
+# images labo : routeurs (FRR+snmp+sshd+softflowd) et terminaux (snmpwalk+softflowd)
+docker build -t mcp-noc-frr:local  lab/containerlab
+docker build -t mcp-noc-term:local -f lab/containerlab/Dockerfile.term lab/containerlab
+
 sudo containerlab deploy -t lab/containerlab/topology.clab.yml
 docker ps --format '{{.Names}} {{.Status}}' | grep mcp-noc-lab   # 5 conteneurs UP
+
+# services d'acquisition de l'hôte : relais syslog udp/1514 + nfcapd udp/9995
+sudo scripts/lab_services.sh
+
+# (mode réel) collecteurs testés contre le labo : 12/13 OK, NETCONF attendu en erreur
+cp .env.example .env && ./venv/bin/python lab/validate_collectors.py
 ```
+
+Détails, télémétrie et injection de panne pour la démo live :
+`PPP_MCP_Telecom_Supervision/lab/README.md`.
 
 ### 2. Keycloak (sécurité A.6)
 
@@ -83,7 +99,8 @@ cd PPP_MCP_Telecom_Supervision && python3 -m venv venv && ./venv/bin/pip install
 # Serveur 1 (sécurité) — stdio
 cd ../mcp-noc-telecom/server && python3 -m venv venv && ./venv/bin/pip install -r requirements.txt
 cp .env.example .env
-CONSENT_MODE=dry_run ./venv/bin/python -m server.main
+./venv/bin/python -m server.main            # CONSENT_MODE=elicitation par défaut (A.6)
+                                             # CONSENT_MODE=dry_run : tests automatises uniquement
 
 # Serveur 2 (9 outils réseau)
 cd ../../noc-mcp-server && python3 -m venv venv && ./venv/bin/pip install -r requirements.txt
@@ -103,6 +120,9 @@ scripts/inspector.sh                 # ou : scripts/inspector.sh --dry-run
 
 # "Command" de l'Inspecteur, un onglet/terminal par serveur,
 # chacun depuis la racine du dépôt (ports alignés sur scripts/inspector.sh) :
+# le serveur 1 tourne en dry_run faute d'IHM de confirmation côté Inspector :
+# sans consentement, le garde A.6 refuse tout appel (fail-safe) — c'est le
+# comportement voulu en production (CONSENT_MODE=elicitation).
 cd mcp-noc-telecom/server && CONSENT_MODE=dry_run ./venv/bin/python -m server.main   # 6274
 cd noc-mcp-server && ./venv/bin/python server.py                                     # 6374
 cd mcp-noc-ai && ./venv/bin/python server.py                                         # 6474
@@ -116,7 +136,7 @@ Les quatre interfaces répondent ensuite sur `http://127.0.0.1:{6274,6374,6474,6
 ```bash
 cd PPP_MCP_Telecom_Supervision
 docker compose up -d            # serveur MCP en Streamable HTTP :8000
-docker compose run --rm tests   # 34 tests dans l'image
+docker compose run --rm tests   # 37 tests dans l'image
 ```
 
 ## Tests
@@ -131,11 +151,15 @@ docker compose -f mcp-noc-telecom/docker-compose.yml up -d                     #
 
 | Niveau | Commande | Résultat |
 |---|---|---|
-| 1 — unitaires (socle) | `cd PPP_MCP_Telecom_Supervision && ./venv/bin/python -m pytest collector/tests -q` | 34 passed |
-| 5 — sécurité A.6 | `cd mcp-noc-telecom/server && ./venv/bin/python -m pytest test_a6_security.py -q` | 28 passed |
+| 1 — unitaires (socle) | `cd PPP_MCP_Telecom_Supervision && ./venv/bin/python -m pytest collector/tests mcp_server/tests -q` | 52 passed |
+| 1 — unitaires (serveur 2) | `cd noc-mcp-server && ./venv/bin/python -m pytest tests -q` | 7 passed |
+| 1 — unitaires (serveur 3) | `cd mcp-noc-ai && ./venv/bin/python -m pytest tests -q` | 14 passed |
+| 5 — sécurité A.6 | `cd mcp-noc-telecom/server && ./venv/bin/python -m pytest -q` | 28 passed (sans Keycloak : 18 passed, 10 skipped) |
 | 3 — bout en bout | `cd mcp-noc-telecom/server && CONSENT_MODE=dry_run ./venv/bin/python test_mcp.py` | RBAC, consentement, audit |
 | 3 — outils vus par l'hôte | `cd noc-mcp-server && ./venv/bin/python test_client_roots.py` | 9 outils, 4 resources, 1 prompt |
-| 5 — socle dans le conteneur | `cd PPP_MCP_Telecom_Supervision && docker compose run --rm tests` | 34 passed |
+| 4 — collecteurs réels (labo) | `cd PPP_MCP_Telecom_Supervision && ./venv/bin/python lab/validate_collectors.py` | 12/13 (NETCONF attendu en erreur) |
+| 4 — mesures de dimensionnement (B.10) | `scripts/measure_dimensionnement.sh` | volumes syslog/NetFlow, RSS, hôte |
+| 5 — socle dans le conteneur | `cd PPP_MCP_Telecom_Supervision && docker compose run --rm tests` | 37 passed |
 
 Niveaux 2 et 4 (intégration réelle, coupure de lien) : voir le rapport,
 partie III — méthodologie de tests.
@@ -152,10 +176,11 @@ partie III — méthodologie de tests.
 | A.7 | Dépôt public, Dockerfile, docker-compose, schémas JSON, Inspector, rapport PDF | ✅ (hors support PPT) |
 | B.2 | Laboratoire Containerlab (5 nœuds, panne injectable) | ✅ |
 | B.4 | pysnmp, ncclient, netmiko, napalm, nfdump, tshark | ✅ |
-| B.5 | ≥ 8 outils MCP + resources (topologie, inventaire, IPAM, runbooks) | ✅ (13 + 9 + 9 + 3 outils) |
+| B.5 | ≥ 8 outils MCP + resources (topologie, inventaire, IPAM, runbooks) | ✅ (13 + 10 + 9 + 3 outils) |
 | B.6 | Lecture seule, comptes minimaux, secrets, sorties non fiables, plafonds PCAP | ✅ |
 | B.7 | `detect_anomalies` sans calcul confié au LLM, RCA documentée | ✅ |
 | B.8 | Serveur opérationnel + documentation de repro + démo live | ✅ (rapport partie III) |
+| B.10 | Dimensionnement & Rigueur (formules, sources) + TCO réel | ✅ (`docs/Dimensionnement_TCO.md`, mesures `scripts/measure_dimensionnement.sh`) |
 
 ## Sécurité en un paragraphe
 
@@ -170,6 +195,7 @@ le tout tracé dans `audit.log`.
 ## Documentation
 
 - `docs/Rapport_PPP_MCP_Telecom_Supervision.pdf` — rapport complet (architectures, commandes, campagne de tests, glossaire)
+- `docs/Dimensionnement_TCO.md` — dimensionnement chiffré (hypothèses, formules F1–F8, mesures labo, recoupements de sources) et TCO 3 ans
 - `PPP_MCP_Telecom_Supervision/docs/architecture.md` — architecture et répartition des blocs
 - `PPP_MCP_Telecom_Supervision/docs/collector.md` — backend de collecte (modes, format de sortie unifié, sécurité)
 - `docs/schemas/` — schémas JSON des outils MCP

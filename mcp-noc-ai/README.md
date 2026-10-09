@@ -1,4 +1,4 @@
-# Serveur 3 — Analyse IA du NOC (9 outils)
+# Serveur 3 — Analyse IA du NOC (10 outils)
 
 Serveur MCP d'analyse : corrélation d'alarmes multi-sources, cause racine
 (RCA) et génération de rapports d'incident, ancrés dans les ressources
@@ -8,7 +8,7 @@ documentaires (topologie, inventaire, runbooks).
 - **Transport** : stdio (démonstration via MCP Inspector)
 - **Aucun secret** : les données sont des fichiers JSON locaux dans `data/`.
 
-## Outils (9)
+## Outils (10)
 
 | Outil | Rôle |
 |---|---|
@@ -16,11 +16,16 @@ documentaires (topologie, inventaire, runbooks).
 | `analyze_root_cause` | cause racine documentée par les sorties réelles |
 | `generate_incident_report` | rapport d'incident construit à partir d'un runbook |
 | `detect_anomalies` | interprétation d'alertes pré-calculées (seuils déterministes) |
+| `formuler_hypothese` | hypothèse de cause racine demandée au LLM (primitive `sampling`, refus possible) |
 | `get_interface_stats`, `get_bgp_peers`, `get_ospf_neighbors`, `ping_host`, `qos_stats` | lectures de contexte |
 
 ## Resources (3)
 
 `noc://topology` · `noc://inventory` · `noc://runbooks`
+
+## Prompts (2)
+
+`qualifier_incident` · `resume_journalier`
 
 ## Données (`data/`)
 

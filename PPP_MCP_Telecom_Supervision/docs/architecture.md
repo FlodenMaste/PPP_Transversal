@@ -10,15 +10,21 @@ Supervision des Réseaux Télécoms » (groupe 3, EC2LT).
 │  r1 (172.20.20.11) ── r2 (.12) ── r3 (.13)        OSPF area 0 · iBGP AS65000  │
 │        │                   │                                                │
 │   client (.14) 192.168.1.0/24          server (.15) 192.168.3.0/24            │
-│   lien de secours r1–r3 (10.0.13.0/30) — injection de panne : eth1 down       │
+│   lien de secours r1–r3 (10.0.13.0/30) — injection de panne : shutdown eth1   │
 └────────────────────────────────────────────────────────────────────────────────┘
         │  SNMPv3 authPriv (compte mcpreadonly, vue "limited")
         │  SSH        (compte noc, groupe frrvty → vtysh lecture seule)
+        │  Syslog     (syslogd -R → udp/1514 → relais hôte → fichier socle)
+        │  NetFlow v9 (softflowd → udp/9995 → nfcapd → /var/netflow)
         ▼
 ```
 
+Images labo construites localement (`lab/containerlab/Dockerfile[.term]`),
+services d'acquisition de l'hôte : `scripts/lab_services.sh` ; validation en
+mode réel : `lab/validate_collectors.py` (12/13, NETCONF non exposé par FRR).
+
 Déploiement : `sudo containerlab deploy -t lab/containerlab/topology.clab.yml`
-(depôt `PPP_MCP_Telecom_Supervision`, détails dans `lab/`).
+(depôt `PPP_MCP_Telecom_Supervision`, détails dans `lab/README.md`).
 
 ## 2. Chaîne MCP
 
@@ -48,7 +54,10 @@ Déploiement : `sudo containerlab deploy -t lab/containerlab/topology.clab.yml`
   `analyze_netflow`, `detect_anomalies`, `capture_pcap`, `qos_stats`,
   `get_recent_syslog`. Tous en **lecture seule**.
 - **Resources** : `mcp://socle/topology`, `mcp://socle/inventory`,
-  `mcp://socle/ipam`, `mcp://socle/runbook/{interface_down|bgp_flap}`.
+  `mcp://socle/ipam`, `mcp://socle/runbook/{interface_down|bgp_flap}`
+  (la resource runbook exige une racine du client — primitive `roots`).
+- **Prompts** : `triage_incident`, `collecte_diagnostic`, `rapport_quotidien` ;
+  **completions** assistées sur l'argument `equipement` et sur `runbook/{name}`.
 - **Transports** : stdio (Inspector) ou Streamable HTTP (`MCP_TRANSPORT=http`,
   port 8000 par défaut).
 - **Sorties** : chaque réponse conserve les marqueurs `untrusted` et
@@ -59,16 +68,18 @@ Déploiement : `sudo containerlab deploy -t lab/containerlab/topology.clab.yml`
 
 ```
 équipement ──SNMPv3/SSH/NETCONF/nfdump/tshark──▶ collector/  (bloc 2)
-                                                 │ réponse unifiée :
-                                                 │ {status, source, data,
-                                                 │  untrusted, untrusted_fields}
-                                                 ▼
-                                          mcp_server/ (bloc 3)
-                                                 │ outils + resources MCP
-                                                 ▼
-                                     Hôte MCP (LLM) ──▶ serveur 1 : jeton,
-                                                        RBAC, consentement,
-                                                        audit avant exécution
+     │                                          │ réponse unifiée :
+     │ syslog (udp/1514, relais normalisé)      │ {status, source, data,
+     │ NetFlow v9 (udp/9995, nfcapd)            │  untrusted, untrusted_fields}
+     ▼                                          ▼
+  /var/log/network_syslog.log · /var/netflow  ──▶  mcp_server/ (bloc 3)
+                                                          │ outils + resources MCP
+                                                          ▼
+                                      Hôte MCP (LLM) ──▶ serveur 1 : jeton,
+                                                         RBAC, consentement,
+                                                         audit avant exécution
+                                              └──▶ serveur 3 : corrélation avec
+                                                   NOC_SYSLOG_FILE (labo en direct)
 ```
 
 ## 5. Sécurité (répartition des blocs)
@@ -90,9 +101,25 @@ Déploiement : `sudo containerlab deploy -t lab/containerlab/topology.clab.yml`
 
 | Niveau | Commande | Couverture |
 |---|---|---|
-| 1 — unitaires | `python -m pytest collector/tests -q` (34) | parsing, bornes, erreurs, mode simulé |
-| 5 — sécurité A.6 | `pytest test_a6_security.py -q` (28, dépôt serveur 1) | RBAC, JWKS, PKCE, 401/200, élicitation |
+| 1 — unitaires (socle) | `python -m pytest collector/tests mcp_server/tests -q` (52) | parsing, bornes, erreurs, mode simulé, primitives MCP |
+| 1 — unitaires (serveurs 2/3) | `pytest tests -q` dans `noc-mcp-server` (7) et `mcp-noc-ai` (14) | garde A.6, sampling, prompts, labo en direct |
+| 5 — sécurité A.6 | `pytest -q` (28, dépôt serveur 1) | RBAC, JWKS, PKCE, 401/200, élicitation |
 | 3 — bout en bout | `python test_mcp.py`, `python test_client_roots.py` | outils vus par l'hôte, refus sans jeton |
+| 4 — collecteurs réels | `python lab/validate_collectors.py` (12/13, labo déployé) | SNMP, CLI, ping, syslog, NetFlow en mode réel |
 
 Les niveaux 2 et 4 (intégration réelle, panne réseau) nécessitent le
 laboratoire déployé — commandes dans le rapport et dans `lab/`.
+
+## 7. Dimensionnement et TCO
+
+Les hypothèses, formules et le coût total de possession sont chiffrés dans
+`docs/Dimensionnement_TCO.md` (dépôt racine) et se recalculent à partir du
+labo avec `scripts/measure_dimensionnement.sh`.
+
+| Grandeur | Formule | Valeur mesurée (labo) | Retenue pour le dimensionnement |
+|---|---|---|---|
+| Volume syslog | `EPS × 86 400 × L` (F1) | 118,5 B/ligne, 0,036 EPS | `L = 810 B` (calibré sur l'estimateur Cisco) |
+| Export NetFlow | `F × R × 8` (F3, ntop) | 488,7 B/flux, 0,023 flux/s | `R = 489 B/flux` (brut nfdump) |
+| Stockage 30 j | `(V_syslog + V_netflow) × 30 × k` (F5) | ≈ 104 MB | 903 GB (PME 50) / 9,0 TB (entreprise 500) |
+| RAM | `Σ RSS mesurés × 1,3` (F6) | 0,35 GiB applicatif (4 serveurs MCP + relais) | 8 GiB |
+| TCO 3 ans | `CAPEX + hébergement + énergie + main-d'œuvre` (F8) | labo : 1 509 € HT | PME : 13 852 € HT (385 €/mois) |

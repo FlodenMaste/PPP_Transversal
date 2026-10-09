@@ -23,9 +23,11 @@ laboratoire Containerlab du projet (SNMPv3 + SSH en lecture seule).
 
 `noc://topology` · `noc://inventory` · `noc://ipam` · `noc://runbook/restart-switch`
 
-## Prompt (1)
+## Prompts (3)
 
 `network_diagnosis` — prompt structuré de diagnostic réseau.
+`performance_review` — revue de performance d'un segment.
+`change_verification` — vérification d'un changement réseau.
 
 ## Démarrage
 

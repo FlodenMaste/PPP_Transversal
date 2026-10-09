@@ -1,7 +1,7 @@
 {
   "server": "noc-mcp-server",
   "framework": "fastmcp",
-  "generated_at": "2026-10-08T23:15:48.501249+00:00",
+  "generated_at": "2026-10-09T09:40:50.443934+00:00",
   "tool_count": 9,
   "tools": [
     {
@@ -46,27 +46,11 @@
     },
     {
       "name": "get_interface_stats",
-      "description": "Récupère les statistiques SNMP sur les interfaces.",
+      "description": "Récupère les statistiques SNMP sur les interfaces (SNMPv3 authPriv).\n\nLes identifiants SNMPv3 sont lus dans le .env du serveur : aucun secret\nn'est transmis comme argument d'outil (A.6 / B.6).",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
           "ip": {
-            "type": "string"
-          },
-          "community": {
-            "default": "public",
-            "type": "string"
-          },
-          "username": {
-            "default": "",
-            "type": "string"
-          },
-          "auth_key": {
-            "default": "",
-            "type": "string"
-          },
-          "priv_key": {
-            "default": "",
             "type": "string"
           },
           "port": {
@@ -106,17 +90,11 @@
     },
     {
       "name": "netconf_get",
-      "description": "Effectue une opération NETCONF GET.",
+      "description": "Effectue une opération NETCONF GET (lecture seule).\n\nLes identifiants NETCONF sont lus dans le .env du serveur : aucun secret\nn'est transmis comme argument d'outil (A.6 / B.6). Verification de la\ncle d'hote activee par defaut.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
           "host": {
-            "type": "string"
-          },
-          "username": {
-            "type": "string"
-          },
-          "password": {
             "type": "string"
           },
           "port": {
@@ -129,9 +107,7 @@
           }
         },
         "required": [
-          "host",
-          "username",
-          "password"
+          "host"
         ],
         "type": "object"
       },
@@ -162,7 +138,7 @@
     },
     {
       "name": "snmp_get",
-      "description": "Effectue une requête SNMP GET (SNMPv3 authPriv si username renseigné,\nsinon SNMPv2c). Sans argument, les identifiants SNMPv3 sont lus dans le .env.",
+      "description": "Effectue une requête SNMP GET en SNMPv3 authPriv (lecture seule).\n\nLes identifiants SNMPv3 sont lus dans le .env du serveur : aucun secret\nn'est transmis comme argument d'outil (A.6 / B.6). Cible bornee a\nl'inventaire du laboratoire.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -170,22 +146,6 @@
             "type": "string"
           },
           "oid": {
-            "type": "string"
-          },
-          "community": {
-            "default": "public",
-            "type": "string"
-          },
-          "username": {
-            "default": "",
-            "type": "string"
-          },
-          "auth_key": {
-            "default": "",
-            "type": "string"
-          },
-          "priv_key": {
-            "default": "",
             "type": "string"
           },
           "port": {
@@ -206,7 +166,7 @@
     },
     {
       "name": "snmp_walk",
-      "description": "Parcourt une branche SNMP (SNMPv3 authPriv si username renseigné,\nsinon SNMPv2c). Sans argument, les identifiants SNMPv3 sont lus dans le .env.",
+      "description": "Parcourt une branche SNMP en SNMPv3 authPriv (lecture seule).\n\nLes identifiants SNMPv3 sont lus dans le .env du serveur : aucun secret\nn'est transmis comme argument d'outil (A.6 / B.6).",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -214,22 +174,6 @@
             "type": "string"
           },
           "oid": {
-            "type": "string"
-          },
-          "community": {
-            "default": "public",
-            "type": "string"
-          },
-          "username": {
-            "default": "",
-            "type": "string"
-          },
-          "auth_key": {
-            "default": "",
-            "type": "string"
-          },
-          "priv_key": {
-            "default": "",
             "type": "string"
           },
           "port": {

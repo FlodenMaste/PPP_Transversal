@@ -70,12 +70,12 @@ collector/
 └── tests/              # tests unitaires (mode simulé)
 ```
 
-## Fonctions exposées (12, pour les outils MCP du bloc 3)
+## Fonctions exposées (13, pour les outils MCP du bloc 3)
 
 `snmp_get`, `snmp_walk`, `get_interface_stats`, `netconf_get`,
 `get_bgp_peers`, `get_ospf_neighbors`, `ping_host`, `traceroute`,
-`analyze_netflow`, `detect_anomalies`, `capture_pcap`, `qos_stats`
-(+ `get_recent_syslog` pour la corrélation).
+`analyze_netflow`, `detect_anomalies`, `capture_pcap`, `qos_stats`,
+`get_recent_syslog` (syslog du relais, pour la corrélation).
 
 `detect_anomalies` n'utilise aucun LLM : règles à seuils déterministes
 (`ANOMALY_*` dans `config.py`) appliquées aux flux nfdump ; le modèle ne

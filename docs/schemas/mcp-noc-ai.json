@@ -1,8 +1,8 @@
 {
   "server": "mcp-noc-ai",
   "framework": "fastmcp",
-  "generated_at": "2026-10-08T23:15:50.607665+00:00",
-  "tool_count": 9,
+  "generated_at": "2026-10-09T09:40:52.071088+00:00",
+  "tool_count": 10,
   "tools": [
     {
       "name": "analyze_root_cause",
@@ -26,7 +26,7 @@
     },
     {
       "name": "correlate_alarms",
-      "description": "Regroupe les Syslogs et les alarmes SNMP survenus dans une fenetre de temps\ndonnee en incidents candidats, en se basant sur la proximite topologique.\nSans reference_time, la fenetre est centree sur le dernier evenement des donnees.",
+      "description": "Regroupe les Syslogs et les alarmes SNMP survenus dans une fenetre de temps\ndonnee en incidents candidats, en se basant sur la proximite topologique.\nSans reference_time, la fenetre est centree sur le dernier evenement des donnees.\nSi NOC_SYSLOG_FILE est defini (labo en direct), les entrees reelles du\nrelais syslog sont ajoutees aux fixtures de demonstration.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -75,6 +75,26 @@
             "default": null
           }
         },
+        "type": "object"
+      },
+      "outputSchema": {
+        "additionalProperties": true,
+        "type": "object"
+      }
+    },
+    {
+      "name": "formuler_hypothese",
+      "description": "Demandee au LLM de l'hote (primitive sampling MCP) d'une HYPOTHESE de\ncause racine, formulee uniquement a partir des preuves rassemblees par\ncorrelate_alarms / analyze_root_cause. L'hote peut refuser ou ne pas\nsupporter le sampling : dans ce cas l'outil renvoie les preuves brutes\nsans hypothese (aucun blocage, aucun hazard).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "incident_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "incident_id"
+        ],
         "type": "object"
       },
       "outputSchema": {

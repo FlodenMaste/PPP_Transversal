@@ -11,7 +11,8 @@ collecteurs en outils et resources (bloc 3).
 
 ```
 .
-├── lab/                 # Bloc 1 : Containerlab, injection de pannes, validation
+├── lab/                 # Bloc 1 : Containerlab, images labo, injection de pannes,
+│                        #          relais syslog/NetFlow, validation en mode réel
 ├── collector/           # Bloc 2 : backend de collecte Python (SNMP, CLI, NETCONF,
 │                        #          NetFlow, PCAP, Syslog, QoS, ping) - tests inclus
 ├── mcp_server/          # Bloc 3 : serveur FastMCP (13 outils + resources)
@@ -40,8 +41,21 @@ Le détail de l'architecture complète est dans [docs/architecture.md](docs/arch
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-python -m pytest collector/tests -q        # 34 tests, aucun réseau requis
+python -m pytest collector/tests mcp_server/tests -q   # 52 tests, aucun réseau requis
 ```
+
+### Laboratoire (mode réel)
+
+```bash
+docker build -t mcp-noc-frr:local  lab/containerlab        # images labo
+docker build -t mcp-noc-term:local -f lab/containerlab/Dockerfile.term lab/containerlab
+sudo containerlab deploy -t lab/containerlab/topology.clab.yml
+sudo ../scripts/lab_services.sh                            # relais syslog + nfcapd
+python lab/validate_collectors.py                          # 12/13 collecteurs réels
+```
+
+Chaînes de télémétrie, IPs de management, injection de panne et démo live :
+[lab/README.md](lab/README.md).
 
 ### Serveur MCP
 
