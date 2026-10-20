@@ -27,7 +27,7 @@ PPP_Transversal/
 ├── noc-mcp-server/                Serveur 2 : 9 outils réseau temps réel (SNMPv3, SSH)
 ├── mcp-noc-ai/                    Serveur 3 : analyse IA (10 outils, corrélation, RCA)
 ├── docs/
-│     ├── Rapport_...pdf           Rapport technique (59 pages)
+│     ├── Rapport_...pdf           Rapport technique (68 pages, Partie II par scénarios S0→S9)
 │     ├── Architecture.md          Revue d'architecture : C4, ADR, flux, risques
 │     ├── Mise_en_oeuvre.md        Partie II : scénarios S0→S9 + résultats observés
 │     ├── scenarios_resultats.json Résultats machine de la campagne (29 appels)
