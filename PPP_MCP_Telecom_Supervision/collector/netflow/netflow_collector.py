@@ -15,7 +15,13 @@ from typing import Any
 
 from collector import config
 from collector.common.schema import make_error_response, make_response
-from collector.common.utils import fixtures_dir, load_json_fixture, logger
+from collector.common.utils import (
+    fixtures_dir,
+    load_json_fixture,
+    logger,
+    resolve_device_key,
+    unknown_device_message,
+)
 
 FIXTURES = fixtures_dir(__file__)
 
@@ -81,9 +87,13 @@ def analyze_netflow(device_ip: str, window: str = "last_5_minutes", top_n: int =
     try:
         if simulated:
             table = load_json_fixture(FIXTURES / "netflow_sample.json")
-            device_data = table.get(device_ip)
+            device_data = table.get(resolve_device_key(device_ip))
             if device_data is None:
-                return make_error_response("netflow", device_ip, "Équipement inconnu dans les fixtures", simulated=True)
+                return make_error_response(
+                        "netflow", device_ip,
+                        unknown_device_message(device_ip, "de flux NetFlow"),
+                        simulated=True,
+                    )
             return make_response("netflow", device_ip, device_data, simulated=True)
 
         data = _real_analyze_netflow(device_ip, window, top_n)

@@ -1,0 +1,382 @@
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.8                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                  🖥  Server:      mcp-noc-socle, 3.4.8                        │
+│                  🚀 Deploy free: https://horizon.prefect.io                  │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                          🎉 Update available: 4.1.2                          │
+│                      Run: pip install --upgrade fastmcp                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[10/20/26 21:26:56] INFO     Starting MCP server                transport.py:241
+                             'mcp-noc-socle' with transport                     
+                             'stdio'                                            
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.8                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                  🖥  Server:      NOC MCP Server, 3.4.8                       │
+│                  🚀 Deploy free: https://horizon.prefect.io                  │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                          🎉 Update available: 4.1.2                          │
+│                      Run: pip install --upgrade fastmcp                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[10/20/26 21:27:01] INFO     Starting MCP server 'NOC MCP       transport.py:241
+                             Server' with transport 'stdio'                     
+
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                                                                              │
+│                         ▄▀▀ ▄▀█ █▀▀ ▀█▀ █▀▄▀█ █▀▀ █▀█                        │
+│                         █▀  █▀█ ▄▄█  █  █ ▀ █ █▄▄ █▀▀                        │
+│                                                                              │
+│                                                                              │
+│                                                                              │
+│                                FastMCP 3.4.8                                 │
+│                            https://gofastmcp.com                             │
+│                                                                              │
+│                  🖥  Server:      noc-ai-diagnostics, 3.4.8                   │
+│                  🚀 Deploy free: https://horizon.prefect.io                  │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                          🎉 Update available: 4.1.2                          │
+│                      Run: pip install --upgrade fastmcp                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+
+[10/20/26 21:27:04] INFO     Starting MCP server                transport.py:241
+                             'noc-ai-diagnostics' with                          
+                             transport 'stdio'                                  
+2026-10-20 21:27:04,226 [INFO] mcp.server.lowlevel.server: Processing request of type ListToolsRequest
+2026-10-20 21:27:04,284 [INFO] mcp.server.lowlevel.server: Processing request of type ListResourcesRequest
+2026-10-20 21:27:04,292 [INFO] mcp.server.lowlevel.server: Processing request of type ListPromptsRequest
+[10/20/26 21:27:04] DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server : snmp_get execute                  
+                             (audit: EXECUTION_TERMINEE)                        
+[10/20/26 21:27:04] INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : snmp_get execute                 
+                             (audit: EXECUTION_TERMINEE)',                      
+                             'extra': None}                                     
+[10/20/26 21:27:05] DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server : snmp_walk execute                 
+                             (audit: EXECUTION_TERMINEE)                        
+[10/20/26 21:27:05] INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : snmp_walk execute                
+                             (audit: EXECUTION_TERMINEE)',                      
+                             'extra': None}                                     
+[10/20/26 21:27:06] DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server :                                   
+                             get_interface_stats execute (audit:                
+                             EXECUTION_TERMINEE)                                
+[10/20/26 21:27:06] INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : get_interface_stats              
+                             execute (audit: EXECUTION_TERMINEE)',              
+                             'extra': None}                                     
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server : get_device_status                 
+                             execute (audit: EXECUTION_TERMINEE)                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : get_device_status                
+                             execute (audit: EXECUTION_TERMINEE)',              
+                             'extra': None}                                     
+[10/20/26 21:27:09] DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server : ping_host execute                 
+                             (audit: EXECUTION_TERMINEE)                        
+[10/20/26 21:27:09] INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : ping_host execute                
+                             (audit: EXECUTION_TERMINEE)',                      
+                             'extra': None}                                     
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server : traceroute_host                   
+                             execute (audit: EXECUTION_TERMINEE)                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : traceroute_host                  
+                             execute (audit: EXECUTION_TERMINEE)',              
+                             'extra': None}                                     
+[10/20/26 21:27:10] DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server : get_bgp_peers                     
+                             execute (audit: EXECUTION_TERMINEE)                
+[10/20/26 21:27:10] INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : get_bgp_peers                    
+                             execute (audit: EXECUTION_TERMINEE)',              
+                             'extra': None}                                     
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server : get_ospf_neighbors                
+                             execute (audit: EXECUTION_TERMINEE)                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : get_ospf_neighbors               
+                             execute (audit: EXECUTION_TERMINEE)',              
+                             'extra': None}                                     
+[10/20/26 21:27:11] DEBUG    Sending INFO to client:             context.py:1446
+                             noc-mcp-server : netconf_get                       
+                             execute (audit: EXECUTION_TERMINEE)                
+[10/20/26 21:27:11] INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-mcp-server : netconf_get execute              
+                             (audit: EXECUTION_TERMINEE)',                      
+                             'extra': None}                                     
+2026-10-20 21:27:11,170 [INFO] mcp.server.lowlevel.server: Processing request of type CallToolRequest
+[10/20/26 21:27:11] DEBUG    Sending INFO to client:             context.py:1446
+                             mcp-noc-socle : get_recent_syslog                  
+                             execute (audit: EXECUTION_TERMINEE)                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'mcp-noc-socle : get_recent_syslog                 
+                             execute (audit: EXECUTION_TERMINEE)',              
+                             'extra': None}                                     
+2026-10-20 21:27:11,204 [INFO] mcp.server.lowlevel.server: Processing request of type CallToolRequest
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             mcp-noc-socle : analyze_netflow                    
+                             execute (audit: EXECUTION_TERMINEE)                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'mcp-noc-socle : analyze_netflow                   
+                             execute (audit: EXECUTION_TERMINEE)',              
+                             'extra': None}                                     
+2026-10-20 21:27:11,261 [INFO] mcp.server.lowlevel.server: Processing request of type CallToolRequest
+[10/20/26 21:27:12] DEBUG    Sending INFO to client:             context.py:1446
+                             mcp-noc-socle : qos_stats execute                  
+                             (audit: EXECUTION_TERMINEE)                        
+[10/20/26 21:27:12] INFO     Received INFO from server: {'msg':    logging.py:44
+                             'mcp-noc-socle : qos_stats execute                 
+                             (audit: EXECUTION_TERMINEE)',                      
+                             'extra': None}                                     
+2026-10-20 21:27:12,454 [INFO] mcp.server.lowlevel.server: Processing request of type CallToolRequest
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             mcp-noc-socle : detect_anomalies                   
+                             execute (audit: EXECUTION_TERMINEE)                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'mcp-noc-socle : detect_anomalies                  
+                             execute (audit: EXECUTION_TERMINEE)',              
+                             'extra': None}                                     
+[10/20/26 21:27:12] DEBUG    Sending INFO to client:             context.py:1446
+                             noc-ai-diagnostics :                               
+                             correlate_alarms execute (audit:                   
+                             EXECUTION_TERMINEE)                                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-ai-diagnostics :                              
+                             correlate_alarms execute (audit:                   
+                             EXECUTION_TERMINEE)', 'extra': None}               
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             noc-ai-diagnostics :                               
+                             analyze_root_cause execute (audit:                 
+                             EXECUTION_TERMINEE)                                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-ai-diagnostics :                              
+                             analyze_root_cause execute (audit:                 
+                             EXECUTION_TERMINEE)', 'extra': None}               
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             noc-ai-diagnostics :                               
+                             generate_incident_report execute                   
+                             (audit: EXECUTION_TERMINEE)                        
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-ai-diagnostics :                              
+                             generate_incident_report execute                   
+                             (audit: EXECUTION_TERMINEE)',                      
+                             'extra': None}                                     
+
+==============================================================================
+  S0 — INVENTAIRE DES PRIMITIVES MCP EXPOSEES
+==============================================================================
+  socle  outils=13  resources=3  prompts=3
+  s2     outils=9  resources=4  prompts=3
+  s3     outils=10  resources=3  prompts=2
+
+==============================================================================
+  S1 — DECOUVERTE DU RESEAU (resources documentaires)
+==============================================================================
+  [OK]   resource noc://topology                       2044 octets
+  [OK]   resource noc://inventory                      1418 octets
+  [OK]   resource noc://ipam                           1549 octets
+  [OK]   resource noc://runbook/restart-switch          860 octets
+  [OK]   prompt  network_diagnosis                    1041 caracteres
+
+==============================================================================
+  S2 — ETAT DES EQUIPEMENTS (SNMPv3 authPriv)
+==============================================================================
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : snmp_get
+Arguments : {"ip": "172.20.20.11", "oid":
+  [OK]   snmp_get                   387 ms   {"status": "success", "host": "172.20.20.11", "values": {"1.3.6.1.2.1.1.1.0": "Linux r1 7.0.0-38-generic #38~24.04.4-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 14 16:37:11 UTC 2 x86_64"}, "untrusted": true}
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : snmp_walk
+Arguments : {"ip": "172.20.20.12", "oid"
+  [OK]   snmp_walk                  655 ms   {"status": "success", "host": "172.20.20.12", "results": [{"oid": "1.3.6.1.2.1.1.1.0", "value": "Linux r2 7.0.0-38-generic #38~24.04.4-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 14 16:37:11 UTC 2 x86_64"}, {" …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : get_interface_stats
+Arguments : {"ip": "172.20.20.
+  [OK]   get_interface_stats       1142 ms   {"status": "success", "host": "172.20.20.13", "results": [{"oid": "1.3.6.1.2.1.2.2.1.1.1", "value": "1"}, {"oid": "1.3.6.1.2.1.2.2.1.1.2", "value": "2"}, {"oid": "1.3.6.1.2.1.2.2.1.1.27", "value": "27 …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : get_device_status
+Arguments : {"name": "r1"}
+Confi
+  [OK]   get_device_status           31 ms   {"status": "found", "device": {"name": "r1", "type": "router", "ip": "172.20.20.11", "vendor": "FRRouting", "location": "NOC-LAB", "role": "edge - loopback 1.1.1.1 - LAN client 192.168.1.1"}, "untrust …
+
+==============================================================================
+  S3 — CONNECTIVITE (ping / traceroute)
+==============================================================================
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : ping_host
+Arguments : {"ip": "172.20.20.13"}
+Confi
+  [OK]   ping_host                 3106 ms   {"status": "success", "host": "172.20.20.13", "reachable": true, "output": "PING 172.20.20.13 (172.20.20.13) 56(84) bytes of data.\n64 bytes from 172.20.20.13: icmp_seq=1 ttl=64 time=0.064 ms\n64 byte …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : traceroute_host
+Arguments : {"ip": "172.20.20.13"}
+  [OK]   traceroute_host             30 ms   {"status": "success", "host": "172.20.20.13", "output": "traceroute to 172.20.20.13 (172.20.20.13), 12 hops max, 60 byte packets\n 1  clab-mcp-noc-lab-r3 (172.20.20.13)  0.089 ms  0.008 ms  0.006 ms\n …
+
+==============================================================================
+  S4 — ROUTAGE (BGP / OSPF en lecture seule)
+==============================================================================
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : get_bgp_peers
+Arguments : {"ip": "172.20.20.11"}
+C
+  [OK]   get_bgp_peers              307 ms   {"status": "success", "host": "172.20.20.11", "data": {"ipv4Unicast": {"routerId": "1.1.1.1", "as": 65000, "vrfId": 0, "vrfName": "default", "tableVersion": 11, "ribCount": 17, "ribMemory": 3264, "pee …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : get_ospf_neighbors
+Arguments : {"ip": "172.20.20.1
+  [OK]   get_ospf_neighbors         287 ms   {"status": "success", "host": "172.20.20.12", "data": {"neighbors": {"3.3.3.3": [{"priority": 1, "state": "Full/DR", "nbrPriority": 1, "nbrState": "Full/DR", "converged": "Full", "role": "DR", "upTime …
+
+==============================================================================
+  S5 — CONFIGURATION (NETCONF rfc 6241, lecture seule)
+==============================================================================
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-mcp-server
+Outil : netconf_get
+Arguments : {"host": "172.20.20.11"}
+C
+  [OK]   netconf_get                621 ms   {"status": "success", "host": "172.20.20.11", "port": 830, "data": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><data xmlns=\"urn:ietf:params:xml:ns:netconf:base:1.0\"><frr-configuration xmlns=\"urn:lab …
+
+==============================================================================
+  S6 — TRAFIC ET TELEMETRIE (syslog / NetFlow / QoS)
+==============================================================================
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : mcp-noc-socle
+Outil : get_recent_syslog
+Arguments : {"device_ip": null, "
+  [OK]   get_recent_syslog           40 ms   {"status": "ok", "source": "syslog", "device": "all", "data": {"entries": [{"pri": "38", "timestamp": "Oct 20 21:22:24", "hostname": "r2", "facility": "AUTH", "severity": 6, "mnemonic": "sshd", "messa …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : mcp-noc-socle
+Outil : analyze_netflow
+Arguments : {"device_ip": "172.20.2
+  [OK]   analyze_netflow             56 ms   {"status": "ok", "source": "netflow", "device": "172.20.20.11", "data": {"window": "last_5_minutes", "top_talkers": [{"src_ip": "2.2.2.2", "dst_ip": "1.1.1.1", "protocol": "TCP", "src_port": 39843, "d …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : mcp-noc-socle
+Outil : qos_stats
+Arguments : {"device_ip": "172.20.20.11"}
+  [OK]   qos_stats                 1193 ms   {"status": "ok", "source": "snmp", "device": "172.20.20.11", "data": {"entries": [{"index": "1", "packets": 0, "drops": 0, "drop_percent": 0.0}, {"index": "2", "packets": 544, "drops": 0, "drop_percen …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : mcp-noc-socle
+Outil : detect_anomalies
+Arguments : {"device_ip": "172.20.
+  [OK]   detect_anomalies            80 ms   {"status": "ok", "source": "netflow", "device": "172.20.20.11", "data": {"window": "last_5_minutes", "anomaly_count": 0, "anomalies": [], "thresholds": {"top_talker_ratio": 0.8, "min_avg_packet_bytes" …
+
+==============================================================================
+  S7 — INCIDENT ET CAUSE RACINE (B.7 / B.8)
+==============================================================================
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-ai-diagnostics
+Outil : correlate_alarms
+Arguments : {"time_window_min
+  [OK]   correlate_alarms            50 ms   {"reference_time": "2026-10-07T22:12:22", "time_window_minutes": 15, "incident_candidates": [{"incident_id": "INC-6c3a8d9d", "devices_involved": ["r1", "r2"], "event_count": 16, "events": [{"type": "s …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-ai-diagnostics
+Outil : analyze_root_cause
+Arguments : {"incident_id":
+  [OK]   analyze_root_cause          40 ms   {"incident_id": "INC-6c3a8d9d", "devices_involved": ["r1", "r2"], "events": [{"type": "syslog", "timestamp": "2026-10-07T22:06:12", "device": "r1", "message": "%LINK-3-UPDOWN: Interface eth1, changed  …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-ai-diagnostics
+Outil : generate_incident_report
+Arguments : {"inciden
+  [OK]   generate_incident_report    20 ms   {"incident_id": "INC-6c3a8d9d", "generated_at": "2026-10-20T21:27:12.634032", "summary": "Incident impliquant r1, r2.", "chronology": [{"timestamp": "2026-10-07T22:06:12", "device": "r1", "message": " …                    DEBUG    Sending INFO to client: hypothese   context.py:1446
+                             de cause racine formulee pour                      
+                             INC-6c3a8d9d                                       
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             noc-ai-diagnostics :                               
+                             formuler_hypothese execute (audit:                 
+                             EXECUTION_TERMINEE)                                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'hypothese de cause racine formulee                
+                             pour INC-6c3a8d9d', 'extra': None}                 
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-ai-diagnostics :                              
+                             formuler_hypothese execute (audit:                 
+                             EXECUTION_TERMINEE)', 'extra': None}               
+                    DEBUG    Sending INFO to client:             context.py:1446
+                             noc-ai-diagnostics :                               
+                             detect_anomalies execute (audit:                   
+                             EXECUTION_TERMINEE)                                
+                    INFO     Received INFO from server: {'msg':    logging.py:44
+                             'noc-ai-diagnostics :                              
+                             detect_anomalies execute (audit:                   
+                             EXECUTION_TERMINEE)', 'extra': None}               
+
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-ai-diagnostics
+Outil : formuler_hypothese
+Arguments : {"incident_id":
+    [SAMPLING] demande LLM de l'hote recue (3109 car.)
+  [OK]   formuler_hypothese          37 ms   {"incident_id": "INC-6c3a8d9d", "status": "ok", "hypothese": "Hypothese formulee par le LLM de l'hote a partir des seules preuves fournies : coupure du lien primaire r1<->r2 (eth1), bascule OSPF sur r …
+    [CONSENTEMENT] CONSENTEMENT HUMAIN REQUIS
+Serveur : noc-ai-diagnostics
+Outil : detect_anomalies
+Arguments : {"time_window_min
+  [OK]   detect_anomalies            42 ms   {"reference_time": "2026-10-07T22:12:06", "time_window_minutes": 15, "anomalies_detected": [{"device": "r1", "type": "interface", "detail": {"name": "eth1", "peer": "r2", "status": "down", "in_octets" …
+
+------------------------------------------------------------------------------
+Consentements humains demandes et accordes : 18
+Outils MCP distincts exploites : 18
+  - s2:get_bgp_peers
+  - s2:get_device_status
+  - s2:get_interface_stats
+  - s2:get_ospf_neighbors
+  - s2:netconf_get
+  - s2:ping_host
+  - s2:snmp_get
+  - s2:snmp_walk
+  - s2:traceroute_host
+  - s3:analyze_root_cause
+  - s3:correlate_alarms
+  - s3:detect_anomalies
+  - s3:formuler_hypothese
+  - s3:generate_incident_report
+  - socle:analyze_netflow
+  - socle:detect_anomalies
+  - socle:get_recent_syslog
+  - socle:qos_stats
+
+Resultats JSON : docs/scenarios_resultats.json

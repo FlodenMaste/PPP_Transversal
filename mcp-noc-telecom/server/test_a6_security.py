@@ -269,6 +269,47 @@ async def test_consentement_client_sans_elicitation(monkeypatch):
         )
 
 
+class FauxContexteSilencieux:
+    """Simule un client qui recoit la demande et ne repond jamais.
+
+    C'est le cas observe avec MCP Inspector 2.9 en Streamable HTTP :
+    le serveur envoie `elicitation/create` sur la requete tools/call mais
+    le client ne la transmet jamais a l'IHM. Sans delai, l'outil restait
+    suspendu jusqu'au timeout du cote client (60 s), sans message exploitable.
+    """
+
+    async def elicit(self, *args, **kwargs):
+        import asyncio
+
+        await asyncio.Event().wait()  # jamais resolu
+
+
+async def test_consentement_delai_depasse_refuse(monkeypatch):
+    """Le client silencieux ne bloque pas l'outil au-dela du delai (A.6)."""
+    monkeypatch.setattr(consent_mod, "CONSENT_MODE", "elicitation")
+    monkeypatch.setattr(consent_mod, "CONSENT_ELICIT_TIMEOUT", 0.2)
+    with pytest.raises(ConsentRefusedError, match="aucune reponse du client"):
+        await ensure_human_consent(
+            user="alice", tool="t", action="demo",
+            ctx=FauxContexteSilencieux(),
+        )
+
+
+async def test_consentement_delai_depasse_journalise(monkeypatch):
+    """Le refus par depassement laisse une entree CONSENT_REFUSE au journal."""
+    monkeypatch.setattr(consent_mod, "CONSENT_MODE", "elicitation")
+    monkeypatch.setattr(consent_mod, "CONSENT_ELICIT_TIMEOUT", 0.2)
+    entrees = []
+    monkeypatch.setattr(consent_mod, "log_action", lambda **kw: entrees.append(kw))
+    with pytest.raises(ConsentRefusedError):
+        await ensure_human_consent(
+            user="alice", tool="t", action="demo",
+            ctx=FauxContexteSilencieux(),
+        )
+    assert entrees and entrees[-1]["status"] == "CONSENT_REFUSE"
+    assert "0.2 s" in entrees[-1]["detail"]
+
+
 # ===========================================================================
 # E. Transport Streamable HTTP + OAuth 2.1
 # ===========================================================================

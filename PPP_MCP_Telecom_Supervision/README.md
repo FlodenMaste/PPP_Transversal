@@ -51,7 +51,7 @@ docker build -t mcp-noc-frr:local  lab/containerlab        # images labo
 docker build -t mcp-noc-term:local -f lab/containerlab/Dockerfile.term lab/containerlab
 sudo containerlab deploy -t lab/containerlab/topology.clab.yml
 sudo ../scripts/lab_services.sh                            # relais syslog + nfcapd
-python lab/validate_collectors.py                          # 12/13 collecteurs réels
+./venv/bin/python lab/validate_collectors.py               # 13/13 collecteurs réels
 ```
 
 Chaînes de télémétrie, IPs de management, injection de panne et démo live :

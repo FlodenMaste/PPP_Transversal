@@ -1,0 +1,22 @@
+# sshd dedie au sous-systeme NETCONF (RFC 6241) - labo Containerlab.
+# Instance SEPARATEE de l'sshd d'origine (port 22) : rien de ce qui sert
+# au collecteur CLI n'est modifie. Lier ce fichier depuis topology.clab.yml.
+#
+# Lecture seule : le sous-systeme /usr/local/bin/netconf_subsystem refuse
+# toute operation d'ecriture par une <rpc-error>.
+#
+# Les cles hote doivent exister avant le demarrage : "ssh-keygen -A" figure
+# deja dans la liste exec du noeud r1.
+
+Port 830
+PidFile /run/sshd-netconf.pid
+
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+PasswordAuthentication yes
+PermitRootLogin no
+AllowUsers noc
+
+Subsystem netconf /usr/local/bin/netconf_subsystem

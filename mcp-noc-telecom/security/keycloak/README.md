@@ -31,8 +31,8 @@ zéro, `docker compose down -v && docker compose up -d --force-recreate`.
 | Durée de vie du jeton | 300 s |
 | Rôles (hiérarchie RBAC) | `operateur` < `superviseur` < `administrateur` |
 | Rôle hors hiérarchie | `invite` (sert à démontrer un **refus** RBAC) |
-| Client OAuth public | `mcp-cli` (authorization code + PKCE S256, ROPC désactivé) |
-| Client automatisation/tests | `mcp-cli-ropc` (grant mot de passe réservé aux scripts stdio, désactivable hors labo) |
+| Client OAuth public | `mcp-cli` (authorization code + PKCE S256 ; ROPC désactivé dans l'export, ouvert dans l'instance du labo pour les démonstrations stdio) |
+| Client automatisation/tests | `mcp-cli-ropc` (grant mot de passe réservé aux scripts et tests stdio — c'est celui qu'utilise `fetch_keycloak_token`, désactivable hors labo) |
 
 ### Utilisateurs
 
@@ -76,5 +76,5 @@ client registration* désactivée.
 
 ```bash
 cd server
-./venv/bin/pytest test_a6_security.py -v      # 28 tests (RBAC, JWKS, consentement, HTTP, PKCE)
+./venv/bin/pytest test_a6_security.py -v      # 30 tests (RBAC, JWKS, consentement, HTTP, PKCE)
 ```

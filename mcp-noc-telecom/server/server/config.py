@@ -57,6 +57,13 @@ MCP_HTTP_PORT = int(os.getenv("MCP_HTTP_PORT", "8001"))
 # dry_run     : simulation journalisee (tests automatises uniquement)
 # deny        : refus systematique (test negatif)
 CONSENT_MODE = os.getenv("CONSENT_MODE", "elicitation").strip().lower()
+# Delai maximal d'attente de la reponse d'elicitation, en secondes.
+# Certains clients MCP (MCP Inspector 2.9 en Streamable HTTP) recoivent la
+# demande sans jamais repondre : sans borne, l'outil restait suspendu jusqu'au
+# delai du cote client, sans ni message ni entree de journal. Au depassement,
+# le consentement est REFUSE (comportement sans risque) et le refus est
+# journalise. A relever si un operateur doit lire le prompt longuement.
+CONSENT_ELICIT_TIMEOUT = float(os.getenv("CONSENT_ELICIT_TIMEOUT", "45"))
 
 
 # --- Secrets du laboratoire (B.6 : surchargeables par variables .env) ----

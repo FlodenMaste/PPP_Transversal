@@ -79,7 +79,7 @@ Rejouer : `scripts/measure_dimensionnement.sh`.
 | RAM nfcapd (×2 : 2055 hôte + 9995 labo) | **2,5 MiB** chacun | idem |
 | RAM serveurs MCP (4) | 76,8 + 81,2 + 95,8 + 71,8 = **325,6 MiB** | `ps -eo rss,args` (serveur démarré) |
 | Hôte de démonstration | **15,96 GiB** RAM (≈ 3 GiB utilisés), load 3,04, disque 50 G **88 %** (5,8 G libres) | `free -h`, `uptime`, `df -h /` |
-| Collectes réelles | **12/13** collecteurs répondent (NETCONF absent du labo FRR, attendu) | `lab/validate_collectors.py` |
+| Collectes réelles | **13/13** collecteurs répondent en mode réel (NETCONF sur `r1:830` via le sous-système RFC 6241 du labo) | `venv/bin/python lab/validate_collectors.py` |
 
 Ordre de grandeur labo : à l'état de repos le labo génère **0,036 EPS** et **0,023 flux/s**,
 soit ≈ **0,37 MB/jour** de syslog (avec `L` mesuré) et ≈ **1 MB/jour** de NetFlow :
@@ -293,8 +293,10 @@ d'exploitation dédié, projets de migration.
    l'hyperviseur → hypothèse **60 W** à confirmer par un wattmètre.
 3. **Disque du labo à 88 %** (50 Go, 5,8 Go libres) : la rétention longue n'est pas tenable
    sur l'hôte tel quel — activer rotation/compression (§7).
-4. **NETCONF absent** du labo FRR (12/13 collecteurs) : pas d'impact sur les volumes, mais
-   la colonne NETCONF du dimensionnement reste à instruire sur un équipement qui l'expose.
+4. **NETCONF limité à la base 1.0 en lecture seule** (sous-système `netconf_subsystem`
+   installé sur `r1:830` par le labo, 13/13 collecteurs) : l'écriture et le
+   chiffrement (base 1.1) restent à instruire sur un équipement qui l'expose
+   nativement.
 5. **Main-d'œuvre = hypothèse** : pas de relevé de temps dans le dépôt (historique git réduit
    à 3 commits) → hypothèse explicite de 289 €/j, à ajuster selon le profil réel.
 6. **Prix volatils** : OVHcloud a révisé ses tarifs au 11/08/2026 (+52 % sur l'ADVANCE-1) et

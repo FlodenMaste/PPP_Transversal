@@ -1,11 +1,137 @@
 {
-  "10.0.2.1": {"reached": true, "hops": [
-    {"hop": 1, "address": "10.0.1.1", "rtt_ms": 0.5},
-    {"hop": 2, "address": "10.0.2.1", "rtt_ms": 1.2}
-  ]},
-  "10.0.9.1": {"reached": false, "hops": [
-    {"hop": 1, "address": "10.0.1.1", "rtt_ms": 0.5},
-    {"hop": 2, "address": null, "rtt_ms": null},
-    {"hop": 3, "address": null, "rtt_ms": null}
-  ]}
+  "172.20.20.11": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.11",
+        "rtt_ms": 0.06
+      }
+    ]
+  },
+  "172.20.20.12": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.12",
+        "rtt_ms": 0.08
+      }
+    ]
+  },
+  "172.20.20.13": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.13",
+        "rtt_ms": 0.07
+      }
+    ]
+  },
+  "172.20.20.14": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.14",
+        "rtt_ms": 0.05
+      }
+    ]
+  },
+  "172.20.20.15": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.15",
+        "rtt_ms": 0.09
+      }
+    ]
+  },
+  "10.0.9.1": {
+    "reached": false,
+    "hops": [
+      {
+        "hop": 1,
+        "address": null,
+        "rtt_ms": null
+      },
+      {
+        "hop": 2,
+        "address": null,
+        "rtt_ms": null
+      },
+      {
+        "hop": 3,
+        "address": null,
+        "rtt_ms": null
+      }
+    ]
+  },
+  "r1": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.11",
+        "rtt_ms": 0.06
+      }
+    ]
+  },
+  "r2": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.12",
+        "rtt_ms": 0.08
+      }
+    ]
+  },
+  "r3": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.13",
+        "rtt_ms": 0.07
+      }
+    ]
+  },
+  "client": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.14",
+        "rtt_ms": 0.05
+      }
+    ]
+  },
+  "server": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "172.20.20.15",
+        "rtt_ms": 0.09
+      }
+    ]
+  },
+  "10.0.2.1": {
+    "reached": true,
+    "hops": [
+      {
+        "hop": 1,
+        "address": "10.0.1.1",
+        "rtt_ms": 0.5
+      },
+      {
+        "hop": 2,
+        "address": "10.0.2.1",
+        "rtt_ms": 1.2
+      }
+    ]
+  }
 }

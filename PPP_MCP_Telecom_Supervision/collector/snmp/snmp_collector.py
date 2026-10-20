@@ -24,7 +24,14 @@ from typing import Any
 
 from collector import config
 from collector.common.schema import make_error_response, make_response
-from collector.common.utils import fixtures_dir, load_json_fixture, logger, sanitize_untrusted_text
+from collector.common.utils import (
+    fixtures_dir,
+    load_json_fixture,
+    logger,
+    resolve_device_key,
+    sanitize_untrusted_text,
+    unknown_device_message,
+)
 
 FIXTURES = fixtures_dir(__file__)
 
@@ -184,7 +191,7 @@ def snmp_get(device_ip: str, oid: str, mode: str | None = None) -> dict[str, Any
     try:
         if simulated:
             table = load_json_fixture(FIXTURES / "snmp_walk_system.json")
-            device_data = table.get(device_ip, {})
+            device_data = table.get(resolve_device_key(device_ip), {})
             if oid not in device_data:
                 return make_error_response("snmp", device_ip, f"OID {oid} introuvable dans les fixtures", simulated=True)
             return make_response("snmp", device_ip, {"oid": oid, "value": device_data[oid]}, simulated=True)
@@ -203,7 +210,7 @@ def snmp_walk(device_ip: str, oid: str, mode: str | None = None) -> dict[str, An
     try:
         if simulated:
             table = load_json_fixture(FIXTURES / "snmp_walk_system.json")
-            device_data = table.get(device_ip, {})
+            device_data = table.get(resolve_device_key(device_ip), {})
             return make_response("snmp", device_ip, {"root_oid": oid, "entries": device_data}, simulated=True)
 
         entries = _run_async(_real_snmp_walk(device_ip, oid))
@@ -225,9 +232,13 @@ def get_interface_stats(device_ip: str, interface: str | None = None, mode: str 
     try:
         if simulated:
             table = load_json_fixture(FIXTURES / "interface_stats.json")
-            device_data = table.get(device_ip)
+            device_data = table.get(resolve_device_key(device_ip))
             if device_data is None:
-                return make_error_response("snmp", device_ip, "Équipement inconnu dans les fixtures", simulated=True)
+                return make_error_response(
+                    "snmp", device_ip,
+                    unknown_device_message(device_ip, "d'interfaces (SNMP)"),
+                    simulated=True,
+                )
             if interface:
                 if interface not in device_data:
                     return make_error_response("snmp", device_ip, f"Interface {interface} introuvable", simulated=True)

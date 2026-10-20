@@ -32,6 +32,8 @@ topology:
         - configs/r1/daemons:/etc/frr/daemons
         - configs/r1/frr.conf:/etc/frr/frr.conf
         - configs/r1/snmpd.conf:/etc/snmp/snmpd.conf
+        - configs/r1/netconf_subsystem:/usr/local/bin/netconf_subsystem
+        - configs/r1/sshd_netconf_config:/etc/ssh/sshd_netconf_config
       exec:
         - sysctl -w net.ipv4.ip_forward=1
         - sh -c 'adduser -D -G frrvty noc || true'
@@ -40,6 +42,10 @@ topology:
         - ssh-keygen -A
         - sh -c 'sed -i "s/^#*PermitRootLogin.*/PermitRootLogin no/; s/^#*PasswordAuthentication.*/PasswordAuthentication yes/" /etc/ssh/sshd_config'
         - /usr/sbin/sshd
+        # Sous-systeme NETCONF (RFC 6241, lecture seule) sur le port 830.
+        # FRRouting n'en fournit pas : cf. docs/collector.md. Instance
+        # separee : le sshd du port 22 ci-dessus reste intact.
+        - sh -c 'chmod 755 /usr/local/bin/netconf_subsystem && /usr/sbin/sshd -t -f /etc/ssh/sshd_netconf_config && /usr/sbin/sshd -f /etc/ssh/sshd_netconf_config'
         - snmpd
         - sh -c 'syslogd -L -R 172.20.20.1:1514 || syslogd -L -R 172.20.20.1'
         - sh -c 'softflowd -i eth1 -n 172.20.20.1:9995 -v 9 -p /var/run/softflowd.pid'

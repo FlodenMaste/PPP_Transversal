@@ -12,15 +12,22 @@ from typing import Any
 
 from collector import config
 from collector.common.schema import make_error_response, make_response
-from collector.common.utils import fixtures_dir, load_json_fixture, logger, sanitize_untrusted
-from collector.snmp.snmp_collector import _real_snmp_walk
+from collector.common.utils import (
+    fixtures_dir,
+    load_json_fixture,
+    logger,
+    resolve_device_key,
+    sanitize_untrusted,
+    unknown_device_message,
+)
+from collector.snmp.snmp_collector import _real_snmp_walk, _run_async
 
 FIXTURES = fixtures_dir(__file__)
 
 
 def _real_qos_stats(device_ip: str) -> dict[str, Any]:
-    pkts = _real_snmp_walk(device_ip, config.QOS_PKTS_OID)
-    drops = _real_snmp_walk(device_ip, config.QOS_DROPS_OID)
+    pkts = _run_async(_real_snmp_walk(device_ip, config.QOS_PKTS_OID))
+    drops = _run_async(_real_snmp_walk(device_ip, config.QOS_DROPS_OID))
     entries = []
     for oid, value in pkts.items():
         index = oid[len(config.QOS_PKTS_OID):].lstrip(".")
@@ -43,9 +50,13 @@ def qos_stats(device_ip: str, interface: str | None = None, mode: str | None = N
     simulated = config.is_simulated(mode)
     try:
         if simulated:
-            device_data = load_json_fixture(FIXTURES / "qos_stats.json").get(device_ip)
+            device_data = load_json_fixture(FIXTURES / "qos_stats.json").get(resolve_device_key(device_ip))
             if device_data is None:
-                return make_error_response("snmp", device_ip, "Équipement inconnu dans les fixtures", simulated=True)
+                return make_error_response(
+                    "snmp", device_ip,
+                    unknown_device_message(device_ip, "de statistiques QoS (SNMP)"),
+                    simulated=True,
+                )
             if interface:
                 if interface not in device_data:
                     return make_error_response("snmp", device_ip, f"Interface {interface} introuvable", simulated=True)

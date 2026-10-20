@@ -24,13 +24,13 @@ def test_snmp_walk_simulated_ok():
 def test_get_interface_stats_simulated_all_interfaces():
     response = get_interface_stats("R1", mode="simulated")
     assert validate_response(response)
-    assert "GigabitEthernet0/0" in response["data"]
+    assert "eth0" in response["data"]
 
 
 def test_get_interface_stats_simulated_single_interface():
-    response = get_interface_stats("R1", interface="GigabitEthernet0/1", mode="simulated")
+    response = get_interface_stats("R1", interface="eth1", mode="simulated")
     assert validate_response(response)
-    assert list(response["data"].keys()) == ["GigabitEthernet0/1"]
+    assert list(response["data"].keys()) == ["eth1"]
 
 
 def test_get_interface_stats_unknown_device():

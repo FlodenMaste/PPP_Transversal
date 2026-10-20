@@ -1,5 +1,106 @@
 {
-  "10.0.1.1": {"packets_sent": 4, "packets_received": 4, "loss_percent": 0.0, "rtt_min_ms": 0.4, "rtt_avg_ms": 0.6, "rtt_max_ms": 0.9},
-  "10.0.2.1": {"packets_sent": 4, "packets_received": 2, "loss_percent": 50.0, "rtt_min_ms": 12.1, "rtt_avg_ms": 15.3, "rtt_max_ms": 18.4},
-  "10.0.9.1": {"packets_sent": 4, "packets_received": 0, "loss_percent": 100.0, "rtt_min_ms": null, "rtt_avg_ms": null, "rtt_max_ms": null}
+  "172.20.20.11": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.05,
+    "rtt_avg_ms": 0.07,
+    "rtt_max_ms": 0.12
+  },
+  "172.20.20.12": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.06,
+    "rtt_avg_ms": 0.09,
+    "rtt_max_ms": 0.15
+  },
+  "172.20.20.13": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.05,
+    "rtt_avg_ms": 0.08,
+    "rtt_max_ms": 0.14
+  },
+  "172.20.20.14": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.04,
+    "rtt_avg_ms": 0.06,
+    "rtt_max_ms": 0.1
+  },
+  "172.20.20.15": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.07,
+    "rtt_avg_ms": 0.11,
+    "rtt_max_ms": 0.18
+  },
+  "10.0.9.1": {
+    "packets_sent": 4,
+    "packets_received": 0,
+    "loss_percent": 100.0,
+    "rtt_min_ms": null,
+    "rtt_avg_ms": null,
+    "rtt_max_ms": null
+  },
+  "r1": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.05,
+    "rtt_avg_ms": 0.07,
+    "rtt_max_ms": 0.12
+  },
+  "r2": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.06,
+    "rtt_avg_ms": 0.09,
+    "rtt_max_ms": 0.15
+  },
+  "r3": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.05,
+    "rtt_avg_ms": 0.08,
+    "rtt_max_ms": 0.14
+  },
+  "client": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.04,
+    "rtt_avg_ms": 0.06,
+    "rtt_max_ms": 0.1
+  },
+  "server": {
+    "packets_sent": 5,
+    "packets_received": 5,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.07,
+    "rtt_avg_ms": 0.11,
+    "rtt_max_ms": 0.18
+  },
+  "10.0.2.1": {
+    "packets_sent": 4,
+    "packets_received": 2,
+    "loss_percent": 50.0,
+    "rtt_min_ms": 12.1,
+    "rtt_avg_ms": 15.3,
+    "rtt_max_ms": 18.4
+  },
+  "10.0.1.1": {
+    "packets_sent": 4,
+    "packets_received": 4,
+    "loss_percent": 0.0,
+    "rtt_min_ms": 0.4,
+    "rtt_avg_ms": 0.6,
+    "rtt_max_ms": 0.9
+  }
 }

@@ -47,5 +47,38 @@
     ],
     "total_bytes": 3700000,
     "total_flows": 4200
+  },
+  "R3": {
+    "window": "last_5_minutes",
+    "top_talkers": [
+      {
+        "src_ip": "192.168.3.10",
+        "dst_ip": "8.8.8.8",
+        "protocol": "UDP",
+        "bytes": 512000,
+        "packets": 640
+      },
+      {
+        "src_ip": "203.0.113.77",
+        "dst_ip": "192.168.3.10",
+        "protocol": "TCP",
+        "bytes": 180000,
+        "packets": 220
+      }
+    ],
+    "total_bytes": 692000,
+    "total_flows": 95
+  },
+  "CLIENT": {
+    "window": "last_5_minutes",
+    "top_talkers": [],
+    "total_bytes": 0,
+    "total_flows": 0
+  },
+  "SERVER": {
+    "window": "last_5_minutes",
+    "top_talkers": [],
+    "total_bytes": 0,
+    "total_flows": 0
   }
 }

@@ -30,6 +30,41 @@ dans `.env` (et de renseigner les vraies IPs/credentials) - aucun
 code des collecteurs n'a besoin d'être modifié. Le mode peut
 aussi être forcé fonction par fonction via l'argument `mode=`.
 
+## Serveur NETCONF du labo (r1:830)
+
+FRRouting ne fournit pas d'agent NETCONF natif : il n'y a ni sysrepo ni
+netopeer2 dans les conteneurs du labo. Plutôt que d'abandonner
+`netconf_get`, r1 heberge un **sous-systeme NETCONF en lecture seule**
+installe a part :
+
+- un second `sshd` ecoute sur le **port 830** avec sa propre configuration
+  (`/etc/ssh/sshd_netconf_config`) ; l'instance d'origine sur le port 22
+  n'est pas modifiee ;
+- `Subsystem netconf /usr/local/bin/netconf_subsystem` pointe vers un
+  script Python qui implemente le framing NETCONF 1.0 (`]]>]]>`) :
+  echange `<hello>`, `<get-config>` / `<get>` et `<close-session>` ;
+- le contenu de `<get-config>` est la **configuration reelle** du routeur,
+  lue via `vtysh -c "show running-config"` et restructuree en XML. Il n'y a
+  pas de datastore YANG natif dans ce labo : le document le dit explicitement
+  plutot que de faire passer une donnee simulee pour une lecture de
+  configuration.
+
+Toute operation d'ecriture (`<edit-config>`, `<lock>`, `<commit>`...) est
+refusee par une `<rpc-error>` : la contrainte « lecture seule stricte » du
+cahier est tenue aussi bien cote collecteur que cote equipement. Seule la
+capacite `urn:ietf:params:netconf:base:1.0` est annoncee.
+
+Demarrage (a refaire apres un redemarrage du conteneur) :
+
+```bash
+docker exec clab-mcp-noc-lab-r1 /usr/sbin/sshd -f /etc/ssh/sshd_netconf_config
+docker exec clab-mcp-noc-lab-r1 ss -lntp | grep 830   # attendu : LISTEN 0.0.0.0:830
+```
+
+`NETCONF_HOSTKEY_VERIFY=false` tient au labo Containerlab, ou les cles
+d'hote sont regenerees a chaque deploiement ; les identifiants
+(`NETCONF_USERNAME` / `NETCONF_PASSWORD`) viennent de `.env`, jamais du code.
+
 ## Format de sortie unifié
 
 Toutes les fonctions renvoient un dict au même format (voir

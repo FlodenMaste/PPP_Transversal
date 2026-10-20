@@ -14,9 +14,15 @@ udp/9995) :
 
 Chaque collecteur est appele une fois en mode "real" ; le script affiche le
 statut, la source et un extrait de donnees. Les collecteurs qui dependent de
-binaires systeme absents (tshark) ou d'un service non expose par le labo
-FRR (NETCONF) sont signales comme NON DISPONIBLE - c'est attendu, pas une
-regression.
+binaires systeme absents (tshark) sont signales comme NON DISPONIBLE.
+
+NETCONF : le labo FRR n'expose pas d'agent NETCONF natif ; r1 heberge un
+sous-systeme NETCONF en lecture seule installe a part (sshd sur le port 830,
+cf. docs/collector.md). Sans ce sous-systeme demarre, netconf_get echoue et le
+script sort en code 1.
+
+Le script ne sort en code 0 que si TOUS les collecteurs repondent en mode
+ reel (13/13).
 
 Cibles (IPs de management statiques, cf. lab/containerlab/topology.clab.yml) :
     r1 = 172.20.20.11   r2 = 172.20.20.12   r3 = 172.20.20.13
@@ -100,8 +106,8 @@ def main() -> int:
     print("\n--- NetFlow (softflowd -> nfcapd udp/9995 -> /var/netflow) ---")
     results.append(("analyze_netflow r1", run("analyze_netflow r1", analyze_netflow, R1, top_n=5)))
 
-    print("\n--- Services non exposes par le labo FRR (attendu en erreur) ---")
-    results.append(("netconf_get r1 (non dispo)", run("netconf_get r1", netconf_get, R1)))
+    print("\n--- NETCONF (RFC 6241, lecture seule, r1:830) ---")
+    results.append(("netconf_get r1", run("netconf_get r1", netconf_get, R1)))
 
     print("\n--- Collecteurs dependent de binaires systeme ---")
     for name, binary in (("nfdump (netflow)", shutil.which("nfdump")), ("tshark (pcap)", shutil.which("tshark"))):
@@ -111,9 +117,8 @@ def main() -> int:
     print("\n" + "=" * 78)
     ok = sum(1 for _, passed in results if passed)
     print(f"  Resultat : {ok}/{len(results)} collecteurs repondent en mode reel")
-    print("  (netconf_get est attendu en erreur : le labo FRR n'expose pas NETCONF)")
     print("=" * 78)
-    return 0 if ok >= len(results) - 2 else 1
+    return 0 if ok == len(results) else 1
 
 
 if __name__ == "__main__":

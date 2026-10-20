@@ -10,7 +10,10 @@ Exigences du cahier des charges (partie A.6) :
 
 Trois canaux de confirmation sont pris en charge :
   1. elicitation : primitive MCP `elicitation/create`, la demande
-     s'affiche dans l'IHM du client (Inspector) - canal officiel ;
+     s'affiche dans l'IHM du client (Inspector) - canal officiel.
+     L'attente est bornee par CONSENT_ELICIT_TIMEOUT (defaut 45 s) : un
+     client qui ne repond pas fait REFUSER le consentement au lieu de
+     laisser l'outil suspendu sans message ;
   2. terminal    : confirmation clavier sur le serveur (demos en
      console, appels directs hors MCP) ;
   3. dry_run     : simulation journalisee, reservee aux tests
@@ -22,7 +25,7 @@ on n'execute rien).
 
 import sys
 
-from server.config import CONSENT_MODE
+from server.config import CONSENT_ELICIT_TIMEOUT, CONSENT_MODE
 from server.security.audit_log import log_action
 
 
@@ -127,13 +130,38 @@ async def ensure_human_consent(
     # --- Canal 1 : elicitation MCP (IHM du client) ------------------------
     if ctx is not None and mode == "elicitation":
         try:
+            import asyncio
+
             from fastmcp.server.elicitation import AcceptedElicitation
 
-            result = await ctx.elicit(
-                message=_MESSAGE.format(tool=tool, user=user, action=action),
-                response_type=bool,
-                response_title="Confirmer l'execution de l'outil",
+            # Attente bornee : un client qui recoit la demande sans jamais
+            # repondre (MCP Inspector 2.9 en Streamable HTTP) laisserait
+            # sinon l'outil suspendu jusqu'au delai du cote client, sans
+            # ni message ni entree de journal. Au depassement : refus.
+            result = await asyncio.wait_for(
+                ctx.elicit(
+                    message=_MESSAGE.format(tool=tool, user=user, action=action),
+                    response_type=bool,
+                    response_title="Confirmer l'execution de l'outil",
+                ),
+                timeout=CONSENT_ELICIT_TIMEOUT,
             )
+        except TimeoutError:
+            log_action(
+                user=user, tool=tool, params={"action": action},
+                status="CONSENT_REFUSE",
+                detail=(
+                    f"Aucune reponse a la demande de consentement dans les "
+                    f"{CONSENT_ELICIT_TIMEOUT:g} s (client sans elicitation ?)"
+                ),
+            )
+            raise ConsentRefusedError(
+                f"Consentement refuse : aucune reponse du client dans les "
+                f"{CONSENT_ELICIT_TIMEOUT:g} s. Le serveur n'execute rien sans "
+                "confirmation explicite. Utiliser un client qui supporte "
+                "l'elicitation, CONSENT_MODE=dry_run (tests) ou relever "
+                "CONSENT_ELICIT_TIMEOUT."
+            ) from None
         except Exception as exc:
             log_action(
                 user=user, tool=tool, params={"action": action},

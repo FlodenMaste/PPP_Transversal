@@ -46,10 +46,20 @@ INSP="$(resolve_insp)"
 declare -a NAMES PORTS DIRS CMDS
 add() { NAMES+=("$1"); PORTS+=("$2"); DIRS+=("$3"); CMDS+=("$4"); }
 
-add serveur1 6274 "mcp-noc-telecom/server" "./venv/bin/python -m server.main"
-add serveur2 6374 "noc-mcp-server"         "./venv/bin/python server.py"
-add serveur3 6474 "mcp-noc-ai"             "./venv/bin/python server.py"
-add socle    6574 "PPP_MCP_Telecom_Supervision" "./venv/bin/python -m mcp_server.server"
+# CONSENT_MODE : MCP Inspector 2.9 ne transmet jamais la demande
+# `elicitation/create` a son IHM (cf. mcp-noc-telecom/server/
+# test_elicitation_http.py). Or les 4 serveurs imposent le consentement
+# (guard.py / server/security/consent.py, defaut `elicitation`) : sous
+# Inspector, tout appel serait alors refuse apres CONSENT_ELICIT_TIMEOUT.
+# On force donc dry_run (simulation journalisee) pour la GUI, et on
+# conserve elicitation par defaut quand un serveur est lance a la main
+# (production) ; le consentement reel (A.6) est verifiable hors
+# navigateur via test_elicitation_http.py.
+
+add serveur1 6274 "mcp-noc-telecom/server" "env CONSENT_MODE=${CONSENT_MODE:-dry_run} ./venv/bin/python -m server.main"
+add serveur2 6374 "noc-mcp-server"         "env CONSENT_MODE=${CONSENT_MODE:-dry_run} ./venv/bin/python server.py"
+add serveur3 6474 "mcp-noc-ai"             "env CONSENT_MODE=${CONSENT_MODE:-dry_run} ./venv/bin/python server.py"
+add socle    6574 "PPP_MCP_Telecom_Supervision" "env CONSENT_MODE=${CONSENT_MODE:-dry_run} ./venv/bin/python -m mcp_server.server"
 
 for i in "${!NAMES[@]}"; do
   sel=0

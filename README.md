@@ -28,9 +28,14 @@ PPP_Transversal/
 ├── mcp-noc-ai/                    Serveur 3 : analyse IA (10 outils, corrélation, RCA)
 ├── docs/
 │     ├── Rapport_...pdf           Rapport technique (59 pages)
+│     ├── Architecture.md          Revue d'architecture : C4, ADR, flux, risques
+│     ├── Mise_en_oeuvre.md        Partie II : scénarios S0→S9 + résultats observés
+│     ├── scenarios_resultats.json Résultats machine de la campagne (29 appels)
+│     ├── campagne_scenarios.txt   Journal brut de la campagne S0→S7
 │     ├── Dimensionnement_TCO.md   Hypothèses, formules, mesures, TCO (B.10)
 │     └── schemas/                 Schémas JSON des outils des 4 serveurs (A.7)
 └── scripts/                       Export des schémas JSON (régénérable),
+                                   campagne de scénarios, Inspector (4 serveurs),
                                    relais syslog, services labo, mesures (B.10)
 ```
 
@@ -75,7 +80,7 @@ docker ps --format '{{.Names}} {{.Status}}' | grep mcp-noc-lab   # 5 conteneurs 
 # services d'acquisition de l'hôte : relais syslog udp/1514 + nfcapd udp/9995
 sudo scripts/lab_services.sh
 
-# (mode réel) collecteurs testés contre le labo : 12/13 OK, NETCONF attendu en erreur
+# (mode réel) collecteurs testés contre le labo : 13/13 OK, dont NETCONF sur r1:830
 cp .env.example .env && ./venv/bin/python lab/validate_collectors.py
 ```
 
@@ -154,10 +159,12 @@ docker compose -f mcp-noc-telecom/docker-compose.yml up -d                     #
 | 1 — unitaires (socle) | `cd PPP_MCP_Telecom_Supervision && ./venv/bin/python -m pytest collector/tests mcp_server/tests -q` | 52 passed |
 | 1 — unitaires (serveur 2) | `cd noc-mcp-server && ./venv/bin/python -m pytest tests -q` | 7 passed |
 | 1 — unitaires (serveur 3) | `cd mcp-noc-ai && ./venv/bin/python -m pytest tests -q` | 14 passed |
-| 5 — sécurité A.6 | `cd mcp-noc-telecom/server && ./venv/bin/python -m pytest -q` | 28 passed (sans Keycloak : 18 passed, 10 skipped) |
+| 5 — sécurité A.6 | `cd mcp-noc-telecom/server && ./venv/bin/python -m pytest -q` | 30 passed (Keycloak actif) |
 | 3 — bout en bout | `cd mcp-noc-telecom/server && CONSENT_MODE=dry_run ./venv/bin/python test_mcp.py` | RBAC, consentement, audit |
+| 3 — consentement réel + PKCE | `cd mcp-noc-telecom/server && ./venv/bin/python test_elicitation_http.py` | 1 elicitation reçue, sysDescr réel |
 | 3 — outils vus par l'hôte | `cd noc-mcp-server && ./venv/bin/python test_client_roots.py` | 9 outils, 4 resources, 1 prompt |
-| 4 — collecteurs réels (labo) | `cd PPP_MCP_Telecom_Supervision && ./venv/bin/python lab/validate_collectors.py` | 12/13 (NETCONF attendu en erreur) |
+| 4 — collecteurs réels (labo) | `cd PPP_MCP_Telecom_Supervision && ./venv/bin/python lab/validate_collectors.py` | 13/13 (NETCONF sur r1:830 compris) |
+| 3 — campagne de scénarios | `./PPP_MCP_Telecom_Supervision/venv/bin/python scripts/run_scenarios.py --json docs/scenarios_resultats.json` | 29 appels, 18 outils, 18 consentements, code 0 |
 | 4 — mesures de dimensionnement (B.10) | `scripts/measure_dimensionnement.sh` | volumes syslog/NetFlow, RSS, hôte |
 | 5 — socle dans le conteneur | `cd PPP_MCP_Telecom_Supervision && docker compose run --rm tests` | 37 passed |
 
@@ -172,11 +179,11 @@ partie III — méthodologie de tests.
 | A.3 | stdio + Streamable HTTP, spec 2025-11-25, HTTP+SSE déprécié | ✅ |
 | A.4 | FastMCP 3.x, `@mcp.tool()`, Python 3.12 | ✅ (`fastmcp>=3.0,<4.0` sur les 4 dépôts) |
 | A.5 | Démonstration via MCP Inspector | ✅ (4 instances, `scripts/inspector.sh`) |
-| A.6 | RBAC Keycloak, OAuth 2.1 + PKCE, anti-passthrough, consentement, audit | ✅ (28 tests) |
+| A.6 | RBAC Keycloak, OAuth 2.1 + PKCE, anti-passthrough, consentement, audit | ✅ (30 tests) |
 | A.7 | Dépôt public, Dockerfile, docker-compose, schémas JSON, Inspector, rapport PDF | ✅ (hors support PPT) |
 | B.2 | Laboratoire Containerlab (5 nœuds, panne injectable) | ✅ |
 | B.4 | pysnmp, ncclient, netmiko, napalm, nfdump, tshark | ✅ |
-| B.5 | ≥ 8 outils MCP + resources (topologie, inventaire, IPAM, runbooks) | ✅ (13 + 10 + 9 + 3 outils) |
+| B.5 | ≥ 8 outils MCP + resources (topologie, inventaire, IPAM, runbooks) | ✅ (13 + 10 + 9 + 3 outils ; 19 outils exploités en scénarios S0→S9) |
 | B.6 | Lecture seule, comptes minimaux, secrets, sorties non fiables, plafonds PCAP | ✅ |
 | B.7 | `detect_anomalies` sans calcul confié au LLM, RCA documentée | ✅ |
 | B.8 | Serveur opérationnel + documentation de repro + démo live | ✅ (rapport partie III) |
@@ -192,9 +199,28 @@ marquée `untrusted`, et côté serveur 1 chaque appel exige un jeton Keycloak
 valide (JWKS/RS256) + le rôle RBAC + une confirmation humaine par élicitation,
 le tout tracé dans `audit.log`.
 
+## Indépendance des serveurs (contrôlée le 20/10/2026)
+
+Chaque serveur a son propre `requirements.txt` et son propre venv. Les dépendances
+réellement déclarées, relues un à un :
+
+| Serveur | Dépendances | Accès réseau |
+|---|---|---|
+| socle `mcp_server.server` | FastMCP 3.4.8 + collecteurs (pysnmp, ncclient, netmiko, napalm, nfdump, tshark) | en-process |
+| `mcp-noc-telecom` (sécurité A.6) | `fastmcp`, `pyjwt`, `python-dotenv` | **aucune librairie** : `snmpwalk` passe par `docker exec clab-mcp-noc-lab-client` |
+| `noc-mcp-server` (collecte) | FastMCP 3.4.8 + ~80 paquets épinglés (`pysnmp`, `ncclient`, `paramiko`, …) | en-process |
+| `mcp-noc-ai` (analyse) | `fastmcp` + `pytest` **uniquement** | **aucun accès réseau** : analyse sur données déjà collectées |
+
+Toutes les versions convergeaient déjà vers FastMCP 3.4.8 : il n'existe aucune
+divergence vers une 4.x. `mcp-noc-ai` étant indépendant de toute stack réseau, le choix
+de son framework reste ouvert (voir `docs/Architecture.md`, ADR-07).
+
 ## Documentation
 
+- `docs/Architecture.md` — revue d'architecture : vues C4, ADR justifiés (ADR-01 → ADR-08), flux détaillés, dépendances réelles des 4 serveurs, risques W1–W12
+- `docs/Mise_en_oeuvre.md` — Partie II : mise en œuvre par **scénarios S0→S9** avec les résultats observés (campagne, élicitation, panne) et synthèse de 19 outils exploités
 - `docs/Rapport_PPP_MCP_Telecom_Supervision.pdf` — rapport complet (architectures, commandes, campagne de tests, glossaire)
+- `docs/scenarios_resultats.json` + `docs/campagne_scenarios.txt` — résultats machine et journal de la campagne
 - `docs/Dimensionnement_TCO.md` — dimensionnement chiffré (hypothèses, formules F1–F8, mesures labo, recoupements de sources) et TCO 3 ans
 - `PPP_MCP_Telecom_Supervision/docs/architecture.md` — architecture et répartition des blocs
 - `PPP_MCP_Telecom_Supervision/docs/collector.md` — backend de collecte (modes, format de sortie unifié, sécurité)

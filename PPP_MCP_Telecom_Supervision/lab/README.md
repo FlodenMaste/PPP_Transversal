@@ -73,8 +73,8 @@ cp .env.example .env          # COLLECTOR_MODE=real + cles SNMPv3/CLI du labo
 ./venv/bin/python lab/validate_collectors.py
 ```
 
-Attendu : **12/13 collecteurs OK en mode réel** (`netconf_get` est le seul
-en erreur, le labo FRR n'expose pas NETCONF — c'est explicite et voulu).
+Attendu : **13/13 collecteurs OK en mode réel** — `netconf_get` interroge
+`r1:830` (sous-système RFC 6241 du labo, base 1.0, lecture seule).
 
 Puis injection de panne pour la démonstration live :
 

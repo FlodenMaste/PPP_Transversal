@@ -21,7 +21,8 @@ Supervision des Réseaux Télécoms » (groupe 3, EC2LT).
 
 Images labo construites localement (`lab/containerlab/Dockerfile[.term]`),
 services d'acquisition de l'hôte : `scripts/lab_services.sh` ; validation en
-mode réel : `lab/validate_collectors.py` (12/13, NETCONF non exposé par FRR).
+mode réel : `venv/bin/python lab/validate_collectors.py` (13/13, NETCONF
+servi par le sous-système RFC 6241 installé sur `r1:830`).
 
 Déploiement : `sudo containerlab deploy -t lab/containerlab/topology.clab.yml`
 (depôt `PPP_MCP_Telecom_Supervision`, détails dans `lab/README.md`).
@@ -103,9 +104,9 @@ Déploiement : `sudo containerlab deploy -t lab/containerlab/topology.clab.yml`
 |---|---|---|
 | 1 — unitaires (socle) | `python -m pytest collector/tests mcp_server/tests -q` (52) | parsing, bornes, erreurs, mode simulé, primitives MCP |
 | 1 — unitaires (serveurs 2/3) | `pytest tests -q` dans `noc-mcp-server` (7) et `mcp-noc-ai` (14) | garde A.6, sampling, prompts, labo en direct |
-| 5 — sécurité A.6 | `pytest -q` (28, dépôt serveur 1) | RBAC, JWKS, PKCE, 401/200, élicitation |
+| 5 — sécurité A.6 | `pytest -q` (30, dépôt serveur 1) | RBAC, JWKS, PKCE, 401/200, élicitation (dont délai dépassé) |
 | 3 — bout en bout | `python test_mcp.py`, `python test_client_roots.py` | outils vus par l'hôte, refus sans jeton |
-| 4 — collecteurs réels | `python lab/validate_collectors.py` (12/13, labo déployé) | SNMP, CLI, ping, syslog, NetFlow en mode réel |
+| 4 — collecteurs réels | `./venv/bin/python lab/validate_collectors.py` (13/13, labo déployé) | SNMP, CLI, ping, syslog, NetFlow, NETCONF en mode réel |
 
 Les niveaux 2 et 4 (intégration réelle, panne réseau) nécessitent le
 laboratoire déployé — commandes dans le rapport et dans `lab/`.

@@ -1,0 +1,188 @@
+#!/usr/bin/python3
+"""Sous-systeme NETCONF (RFC 6241) minimal pour le labo Containerlab.
+
+Installe dans r1 comme cible du "Subsystem netconf" d'OpenSSH : la connexion
+SSH transporte le protocole NETCONF 1.0 (framing "]]>]]>").
+
+Perimetre : LECTURE SEULE. Seules <hello>, <get-config> et <close-session>
+sont traitees ; toute ecoute (<edit-config>, <lock>, ...) est refusee.
+
+Le contenu renvoye par <get-config> est la configuration reelle du routeur
+(tel que rapportee par vtysh), restructuree en XML : il n'y a pas de
+sysrepo/netopeer2 dans ce labo, donc pas de datastore YANG natif.
+"""
+
+import subprocess
+import sys
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
+
+FRAME = "]]>]]>"
+
+# Namespace XML de NETCONF (RFC 6241). Distinct de l'URI de capacite
+# "urn:ietf:params:netconf:base:1.0" utilise plus bas dans CAPABILITIES :
+# ncclient compare le tag lxml qualifie a celui-ci, un ecart de nom empeche
+# la reconnaissance du hello et provoque un timeout d'echange de capacites.
+NS_XML = "urn:ietf:params:xml:ns:netconf:base:1.0"
+
+# Lecture seule : on n'annonce QUE base:1.0. Ni writable-running ni validate,
+# que le serveur ne prend pas en charge (toute ecoute est refusee).
+CAPABILITIES = [
+    "urn:ietf:params:netconf:base:1.0",
+]
+
+WRITING_OPS = (
+    "edit-config", "copy-config", "delete-config", "lock", "unlock",
+    "commit", "discard-changes", "create-subscription", "dispatch",
+    "close-session-then-write",
+)
+
+
+def send(xml: str) -> None:
+    sys.stdout.write(xml + FRAME)
+    sys.stdout.flush()
+
+
+def read_message() -> str | None:
+    """Lit un message NETCONF 1.0 (framing historique "]]>]]>").
+
+    La délimiteur fait 6 caractères : la comparaison doit porter sur
+    len(FRAME), sinon la boucle ne se termine jamais et le serveur reste
+    bloqué sans jamais répondre aux <rpc>.
+    """
+    buf = []
+    while True:
+        ch = sys.stdin.read(1)
+        if not ch:
+            return None
+        buf.append(ch)
+        if "".join(buf[-len(FRAME):]) == FRAME:
+            return "".join(buf[:-len(FRAME)])
+
+
+def running_config() -> str:
+    """Configuration reelle du routeur, via vtysh."""
+    try:
+        out = subprocess.run(
+            ["vtysh", "-c", "show running-config"],
+            capture_output=True, text=True, timeout=10, check=True,
+        ).stdout
+    except Exception as exc:  # noqa: BLE001
+        return f"<error>impossible de lire la configuration: {exc}</error>"
+    return out.strip()
+
+
+def build_reply(message_id: str, body: str) -> str:
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        f'<rpc-reply message-id="{message_id}" '
+        f'xmlns="{NS_XML}">'
+        f"{body}</rpc-reply>"
+    )
+
+
+def handle_get_config(msg_id: str) -> str:
+    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    config = running_config()
+    body = (
+        "<data>"
+        '<frr-configuration xmlns="urn:lab:frr:netconf:1.0">'
+        f"<system><hostname>{socket_hostname()}</hostname>"
+        f"<collected-at>{now}</collected-at></system>"
+        "<running-config><![CDATA["
+        f"{config}"
+        "]]></running-config>"
+        "</frr-configuration>"
+        "</data>"
+    )
+    return build_reply(msg_id, body)
+
+
+def socket_hostname() -> str:
+    try:
+        return open("/etc/hostname", encoding="utf-8").read().strip()
+    except Exception:  # noqa: BLE001
+        return "inconnu"
+
+
+def main() -> int:
+    # 1) hello serveur
+    caps = "".join(f"<capability>{c}</capability>" for c in CAPABILITIES)
+    send(
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        f'<hello xmlns="{NS_XML}">'
+        f"<capabilities>{caps}</capabilities>"
+        "<session-id>1</session-id>"
+        "</hello>"
+    )
+
+    # 2) hello client
+    client_hello = read_message()
+    if client_hello is None:
+        return 0
+    try:
+        ET.fromstring(client_hello)
+    except ET.ParseError:
+        return 1
+
+    # 3) boucle rpc (lecture seule)
+    while True:
+        raw = read_message()
+        if raw is None or not raw.strip():
+            return 0
+        try:
+            root = ET.fromstring(raw.strip())
+        except ET.ParseError:
+            continue
+
+        msg_id = root.get("message-id", "0")
+        tag = root.tag.split("}")[-1]
+
+        if tag != "rpc":
+            continue
+
+        ops = [c.tag.split("}")[-1] for c in root]
+
+        if not ops:
+            send(build_reply(msg_id, ""))
+            continue
+
+        op = ops[0]
+        if op in WRITING_OPS:
+            send(
+                build_reply(
+                    msg_id,
+                    '<rpc-error><error-type>operation-not-supported</error-type>'
+                    "<error-tag>operation-failed</error-tag>"
+                    "<error-message>serveur NETCONF en lecture seule "
+                    f"(operation &lt;{op}&gt; refusee)</error-message>"
+                    "</rpc-error>",
+                )
+            )
+            continue
+
+        if op == "get-config":
+            send(handle_get_config(msg_id))
+            continue
+
+        if op == "get":
+            send(handle_get_config(msg_id))
+            continue
+
+        if op == "close-session":
+            send(build_reply(msg_id, ""))
+            return 0
+
+        send(
+            build_reply(
+                msg_id,
+                '<rpc-error><error-type>application</error-type>'
+                "<error-tag>operation-not-supported</error-tag>"
+                f"<error-message>operation &lt;{op}&gt; inconnue</error-message>"
+                "</rpc-error>",
+            )
+        )
+
+
+if __name__ == "__main__":
+    sys.exit(main())
